@@ -1,0 +1,139 @@
+{
+    "fonts": [
+        {
+            "name": "Playfair Display",
+            "fallback": "serif"
+        },
+        {
+            "name": "Questrial",
+            "fallback": "sans-serif"
+        },
+        {
+            "name": "Lora",
+            "fallback": "serif"
+        },
+        {
+            "name": "Roboto",
+            "fallback": "sans-serif"
+        },
+        {
+            "name": "Inter",
+            "fallback": "sans-serif"
+        },
+        {
+            "name": "Geist",
+            "fallback": "sans-serif"
+        },
+        {
+            "name": "Geist Mono",
+            "fallback": "monospace"
+        },
+        {
+            "name": "JetBrains Mono",
+            "fallback": "monospace"
+        }
+    ],
+    "markdownFields": {
+        "title": [
+            "title",
+            "heading",
+            "question",
+            "name",
+            "label"
+        ],
+        "figure": [
+            "value",
+            "version",
+            "monthly",
+            "price"
+        ],
+        "prose": [
+            "content",
+            "body",
+            "answer",
+            "notes"
+        ],
+        "text": [
+            "intro",
+            "description",
+            "body",
+            "blurb",
+            "quote",
+            "note",
+            "role",
+            "bio"
+        ],
+        "list": [
+            "includes"
+        ],
+        "nested": [
+            "items",
+            "features",
+            "cells",
+            "points",
+            "stats",
+            "tiers",
+            "stories",
+            "testimonials",
+            "releases",
+            "members"
+        ]
+    },
+    "shippedBlocks": [
+        "breadcrumbs",
+        "carousel.logos",
+        "cta-banner",
+        "faq",
+        "feature-grid",
+        "form.block",
+        "gallery.base",
+        "grid.base",
+        "hero",
+        "html-embed",
+        "link.group.component",
+        "post.collection",
+        "post.index",
+        "reusable.block",
+        "footer.simple-social",
+        "footer.logo-links",
+        "spacer",
+        "testimonials",
+        "text-block",
+        "youtube-video-embed",
+        "stats",
+        "pricing",
+        "team",
+        "video-embed"
+    ],
+    "briefHeadings": [
+        "## 1. Product",
+        "### Originality",
+        "## 2. Identity",
+        "### Rules",
+        "## 3. Tokens → Nuxion",
+        "### 3.1 Swatches",
+        "### 3.2 Color Themes (canvases)",
+        "### 3.3 Button presets",
+        "### 3.4 Typography",
+        "### 3.5 Width, shape and depth",
+        "### 3.6 Spacing and rhythm",
+        "### 3.7 Theme-local variables",
+        "## 4. Art and imagery",
+        "### Art primitives (CSS)",
+        "### Art elements (Vue)",
+        "### Generated assets",
+        "## 5. Blocks",
+        "### 5.1 Shipped blocks, restyled",
+        "### 5.2 Theme blocks",
+        "### 5.3 Chrome",
+        "## 6. Demo site",
+        "### Brand",
+        "### Cast",
+        "### Pages",
+        "### Blog",
+        "### Settings and forms",
+        "## 7. Build plan",
+        "## 8. QA before release",
+        "## Open questions"
+    ]
+}

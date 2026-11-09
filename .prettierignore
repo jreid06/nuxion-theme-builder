@@ -1,0 +1,6 @@
+.nuxt
+.output
+node_modules
+package-lock.json
+data/nuxion.generated.json
+test/unit/export/__snapshots__

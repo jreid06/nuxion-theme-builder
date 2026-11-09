@@ -1,0 +1,453 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderBrief > matches the stored Driftwire output 1`] = `
+"# Driftwire — Theme brief
+
+> A ship’s chart room: paper, navy ink and signal flags, where every release is a flag you hoist and can lower again.
+
+|                          |                                                                                         |
+| ------------------------ | --------------------------------------------------------------------------------------- |
+| **Codename / namespace** | \`driftwire\` — every block is \`driftwire.*\`, every class and variable \`.dw-*\` / \`--dw-*\` |
+| **CSS prefix**           | \`dw\`                                                                                    |
+| **Default scheme**       | light                                                                                   |
+| **Dark scheme**          | full                                                                                    |
+| **Status**               | demo                                                                                    |
+| **Target release**       | Nuxion v1.10                                                                            |
+
+---
+
+## 1. Product
+
+**Positioning** — Marketing sites for software and developer tools that would rather look considered than look like every other dark SaaS page.
+
+**Audience** — Developers and agencies building a product site on Nuxion, comfortable in a Nuxt repo.
+
+**Signature features**
+
+| Feature                                                         | Delivered by                        |
+| --------------------------------------------------------------- | ----------------------------------- |
+| A chart-border scale bar across the top of each section         | theme.css §2 Frame                  |
+| A signal board in the hero, where flags visibly hoist and lower | driftwire.hero + DriftwireConsole   |
+| Signal-flag art: bold geometric panels instead of gradients     | theme.css §3 + DriftwireArt         |
+| Chart contour lines                                             | theme.css §3 + scripts/dataset/art/ |
+| Serif display headlines on warm paper                           | §3.4 fonts and type scale           |
+| The changelog as a ship’s log                                   | driftwire.timeline                  |
+
+**Reference brands** — None. The concept comes from the product: a feature flag as a signal flag, raised and lowered on a mast.
+
+### Originality
+
+- [x] Not designed from another theme or template, paid or free
+- [ ] Theme name is not a real product’s name or trademark: search the web, npm and the obvious domains
+- [x] The demo company is invented, as is everyone in it. Search each name, above all anyone quoted
+- [x] The demo’s domain is reserved (.example), and any package it prints uses a scope nobody publishes under
+- [x] No real logo, wordmark, product screenshot, illustration or marketing copy
+- [x] Every signature feature comes from this theme’s own concept
+- [x] Every font is licensed for self-hosting on the sites built with it (OFL, Apache)
+
+---
+
+## 2. Identity
+
+The page is a working chart: warm paper, navy ink, ruled edges and the graduated border every sea chart carries. Colour isn’t ambient. It arrives only as signal flags, in the flat primary colours flags use so they can be read from a distance, which gives the theme large areas of quiet paper and a few loud, geometric moments.
+
+Depth comes from tone and ruled lines, never from glow, blur or drop shadow. There are no gradients anywhere. The recognisable tension is an old-fashioned serif headline set against precise engineering detail: monospaced labels, tick marks and code.
+
+### Rules
+
+| Rule                                                    | Kept by                                                                                  |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| No gradients, mesh, grain or glow                       | the art options offer only flags and contours; no gradient swatch or button preset ships |
+| No vertical rails or corner crosses                     | theme.css §2 draws only the horizontal scale bar                                         |
+| Dark is navy, never neutral black                       | the only dark swatches are ground and panel                                              |
+| Signal colours appear only in art and the accent button | no text field offers them; theme.css reads them only as --dw-art-*                       |
+| Headings left-aligned on Driftwire blocks               | block templates default to left                                                          |
+| Buttons are rectangles, never pills                     | every Link Style sets one shape, and --radius-button sets the corner                     |
+
+---
+
+## 3. Tokens → Nuxion
+
+### 3.1 Swatches
+
+| Name          | Hex       | Slug           | Role                  | Read by                   |
+| ------------- | --------- | -------------- | --------------------- | ------------------------- |
+| Paper         | \`#F5EFE3\` | \`dw-paper\`     | light canvas          | canvas bg                 |
+| Chart         | \`#EADFCB\` | \`dw-mist\`      | light panel           | raised bg                 |
+| Navy ink      | \`#13233B\` | \`dw-ink-light\` | light text            | canvas, raised text       |
+| Deep navy     | \`#0E1C2F\` | \`dw-ground\`    | dark canvas           | canvas dark bg, night bg  |
+| Night panel   | \`#172A43\` | \`dw-panel\`     | dark panel            | raised dark bg            |
+| Night line    | \`#2B4060\` | \`dw-line\`      | dark hairline         | outline border            |
+| Chalk         | \`#F3EDE0\` | \`dw-ink\`       | dark text             | canvas, raised dark text  |
+| Fog           | \`#B7BFCB\` | \`dw-muted\`     | dark secondary text   | --dw-muted, footer links  |
+| Haze          | \`#919DAE\` | \`dw-faint\`     | dark labels           | generated images          |
+| Signal red    | \`#B02A1A\` | \`dw-art-1\`     | accent (light), art   | canvas accent, --dw-art-1 |
+| Signal blue   | \`#1D4F91\` | \`dw-art-2\`     | art                   | --dw-art-2                |
+| Signal yellow | \`#F2B62B\` | \`dw-art-3\`     | art                   | --dw-art-3                |
+| Bunting       | \`#FBF7EE\` | \`dw-art-4\`     | art, the flags’ white | --dw-art-4                |
+| Deep water    | \`#1B6F6F\` | \`dw-art-5\`     | art, contours         | --dw-art-5                |
+| Sand          | \`#D8C8A4\` | \`dw-art-6\`     | art, contours on dark | --dw-art-6                |
+| Flare         | \`#FF8A6B\` | \`dw-flare\`     | accent (dark)         | canvas dark accent        |
+| White         | \`#FFFFFF\` | \`dw-white\`     | button label          | Accent button             |
+
+**Gradients and effects** — None.
+
+### 3.2 Color Themes (canvases)
+
+| Theme                   | Light: bg / text / accent     | Dark: bg / text / accent    | Used on                           |
+| ----------------------- | ----------------------------- | --------------------------- | --------------------------------- |
+| \`canvas\` — site default | Paper / Navy ink / Signal red | Deep navy / Chalk / Flare   | Site Settings default             |
+| \`raised\` — panel        | Chart / Navy ink / Signal red | Night panel / Chalk / Flare | panels, comparison table          |
+| \`night\` — always dark   | Deep navy / Chalk / Flare     | (leave empty)               | footer and closing call to action |
+
+### 3.3 Button presets
+
+| Preset    | \`style\` | \`shape\`      | \`colorSource\` | Colours (light / dark)                   | Use                 |
+| --------- | ------- | ------------ | ------------- | ---------------------------------------- | ------------------- |
+| Primary   | button  | rounded-soft | seed          | Navy ink / Chalk                         | default action      |
+| Accent    | button  | rounded-soft | manual        | Signal red on White / Flare on Deep navy | the one main action |
+| Secondary | button  | rounded-soft | manual        | Chart on Navy ink / Night panel on Chalk | supporting action   |
+| Outline   | outline | rounded-soft | inherit       | follows the theme                        | quiet action        |
+| Text link | default | default      | inherit       | follows the theme                        | inline links        |
+| Muted     | default | default      | manual        | Fog / Fog                                | footer links        |
+
+**Button metrics** — Inter 500, no letter-spacing.
+
+\`\`\`css
+[data-nuxion-theme='driftwire'] {
+    --button-border-width: 1px;
+    --radius-button: 2px;
+}
+\`\`\`
+
+### 3.4 Typography
+
+| Role          | Family           | \`fonts.js\` key   | Licence | Weights | Fallback     |
+| ------------- | ---------------- | ---------------- | ------- | ------- | ------------ |
+| Heading       | Playfair Display | Playfair Display | OFL 1.1 | 500     | \`serif\`      |
+| Body          | Inter            | Inter            | OFL 1.1 | 400–600 | \`sans-serif\` |
+| Code / labels | JetBrains Mono   | JetBrains Mono   | OFL 1.1 | 400–500 | \`monospace\`  |
+
+**Type scale**
+
+| Nuxion class        | Reference role | Mobile size | Desktop size | Line height | Tracking | Weight |
+| ------------------- | -------------- | ----------- | ------------ | ----------- | -------- | ------ |
+| \`.heading-1\`        | display        | 2.5rem      | 4.5rem       | 1.08        | -0.01em  | 500    |
+| \`.heading-2\`        | section        | 2rem        | 3.25rem      | 1.12        | -0.005em | 500    |
+| \`.heading-3\`        | panel          | 1.5rem      | 1.875rem     | 1.2         | 0        | 500    |
+| \`.heading-4\`        | item           | 1.25rem     | 1.5rem       | 1.25        | 0        | 500    |
+| \`.nuxion-paragraph\` | body           | 1rem        | 1.0625rem    | 1.6         | 0        | 400    |
+| \`.dw-eyebrow\`       | label          | 0.75rem     | 0.75rem      | 1.4         | 0.08em   | 500    |
+
+### 3.5 Width, shape and depth
+
+| Token                        | Shipped            | Theme    | Note                                                       |
+| ---------------------------- | ------------------ | -------- | ---------------------------------------------------------- |
+| \`--container-8xl\`            | 88rem              | 76rem    | nav, sections and footer all read it                       |
+| \`--container-measure-lead\`   | 36rem              |          | A section’s intro paragraph                                |
+| \`--container-measure-intro\`  | 42rem              |          | A block’s own intro                                        |
+| \`--container-measure-narrow\` | 48rem              |          | Reading width: FAQ, a post’s body                          |
+| \`--container-measure-medium\` | 56rem              |          | A framed card, such as the CTA banner                      |
+| \`--container-measure-wide\`   | 64rem              |          | The hero                                                   |
+| \`--container-measure-ultra\`  | 80rem              |          | The widest text container                                  |
+| \`--radius-card\`              | 1rem               | 0.25rem  | Feature grids, testimonials, stats, pricing and blog cards |
+| \`--radius-panel\`             | 1.5rem             | 0.25rem  | The large CTA banner                                       |
+| \`--radius-media\`             | 0.5rem             | 0.125rem | Hero images and one gallery style                          |
+| \`--shadow-media\`             | drop shadow        | \`none\`   | flat system                                                |
+| Button corners               | per preset         | 2px      | \`--radius-button\`                                          |
+| Input corners                | \`rounded-md\` (6px) | 2px      | scoped \`[data-block='form.block']\` rule                    |
+
+**Depth model** — flat, no shadows.
+
+### 3.6 Spacing and rhythm
+
+|                | Value                        | Where                                      |
+| -------------- | ---------------------------- | ------------------------------------------ |
+| Section rhythm | default (3rem → 4rem → 5rem) | \`--spacing-section\`, scoped in \`theme.css\` |
+
+### 3.7 Theme-local variables
+
+Generated from the palette.
+
+| Variable           | Value                                                | Used by                  |
+| ------------------ | ---------------------------------------------------- | ------------------------ |
+| \`--dw-ground\`      | \`var(--studio-nuxt-body-color)\`                      | the section’s background |
+| \`--dw-ink\`         | \`var(--studio-nuxt-text-color)\`                      | the section’s text       |
+| \`--dw-line\`        | \`color-mix(in oklab, currentColor 11%, transparent)\` | hairlines                |
+| \`--dw-line-strong\` | \`color-mix(in oklab, currentColor 20%, transparent)\` | ruled edges              |
+| \`--dw-muted\`       | \`color-mix(in oklab, currentColor 76%, transparent)\` | secondary text           |
+| \`--dw-art-1\`       | \`var(--studio-nuxt-dw-art-1, #b02a1a)\`               | art                      |
+| \`--dw-art-2\`       | \`var(--studio-nuxt-dw-art-2, #1d4f91)\`               | art                      |
+| \`--dw-art-3\`       | \`var(--studio-nuxt-dw-art-3, #f2b62b)\`               | art                      |
+| \`--dw-art-4\`       | \`var(--studio-nuxt-dw-art-4, #fbf7ee)\`               | art                      |
+| \`--dw-art-5\`       | \`var(--studio-nuxt-dw-art-5, #1b6f6f)\`               | art                      |
+| \`--dw-art-6\`       | \`var(--studio-nuxt-dw-art-6, #d8c8a4)\`               | art                      |
+
+---
+
+## 4. Art and imagery
+
+**Imagery policy** — generated abstract. Generated, flat, geometric. Everything is drawn from the palette by our own code, and no third-party image ships.
+
+### Art primitives (CSS)
+
+| Class          | What it draws                                        | Variants                                               | Motion |
+| -------------- | ---------------------------------------------------- | ------------------------------------------------------ | ------ |
+| \`.dw-scale\`    | alternating graduated blocks, as on a chart’s border |                                                        | none   |
+| \`.dw-flag\`     | flat signal-flag panels in hard-edged geometry       | --quartered, --saltire, --bordered, --pennant, --split | none   |
+| \`.dw-contours\` | chart depth lines, on a light ground                 | --sand, --shallows                                     | none   |
+
+### Art elements (Vue)
+
+| Component            | What it draws                                         | Used in             |
+| -------------------- | ----------------------------------------------------- | ------------------- |
+| DriftwireArt         | one art option as a panel                             | CTA, bento, stories |
+| DriftwireConsole     | the signal board: pennants on a mast, hoist and lower | hero                |
+| DriftwireBentoVisual | small product scenes in the new palette               | bento               |
+
+### Generated assets
+
+| Asset                      | Count | Size     | Notes                                  |
+| -------------------------- | ----- | -------- | -------------------------------------- |
+| Logo light / dark (SVG)    | 2     |          | pennant-on-a-mast mark; serif wordmark |
+| Favicon + apple-touch-icon | 2     |          | the pennant                            |
+| OG default                 | 1     | 1200×630 | paper, contours, one flag              |
+| Blog covers                |       |          | flags and contours                     |
+| Author avatars             |       |          | flat, drawn, on signal colours         |
+| Customer wordmarks         |       |          | recoloured only                        |
+| Diagrams                   |       |          | navy line work on paper                |
+
+---
+
+## 5. Blocks
+
+### 5.1 Shipped blocks, restyled
+
+| \`_type\`        | Treatment                                 |
+| -------------- | ----------------------------------------- |
+| \`faq\`          | ruled rows, serif questions               |
+| \`testimonials\` | Chart panels, serif quote, no drop shadow |
+| \`grid.base\`    | Chart panels with real gaps               |
+| \`form.block\`   | 2px corners, ruled inputs                 |
+
+### 5.2 Theme blocks
+
+| \`_type\`                 | Component               | Purpose                                                                | Key fields                                    | Links / PT → projection | In a grid column?      |
+| ----------------------- | ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------- | ----------------------- | ---------------------- |
+| \`driftwire.hero\`        | DriftwireHero.vue       | two columns, text left and signal board right; logos a plain row below | announcement, consoleFlags, logos             | yes                     | no → \`fullWidthBlocks\` |
+| \`driftwire.bento\`       | DriftwireBento.vue      | asymmetric panels with gaps                                            | cells, title, body, metric                    | no                      | no → \`fullWidthBlocks\` |
+| \`driftwire.code-window\` | DriftwireCodeWindow.vue | code left, intro right, light panel in the light scheme                | tabs, points, title, body                     | no                      | no → \`fullWidthBlocks\` |
+| \`driftwire.stories\`     | DriftwireStories.vue    | editorial quote list with ruled separators                             | stories, name, role, quote, company, result   | yes                     | no → \`fullWidthBlocks\` |
+| \`driftwire.metrics\`     | DriftwireMetrics.vue    | logbook figures in a ruled row                                         | stats, value, label, note                     | no                      | no → \`fullWidthBlocks\` |
+| \`driftwire.logo-cloud\`  | DriftwireLogoCloud.vue  | ruled table of integration categories                                  | items, name, icon                             | yes                     | no → \`fullWidthBlocks\` |
+| \`driftwire.pricing\`     | DriftwirePricing.vue    | ledger columns, billing switch and comparison table                    | tiers, name, monthly, blurb, includes, groups | yes                     | no → \`fullWidthBlocks\` |
+| \`driftwire.timeline\`    | DriftwireTimeline.vue   | ship’s-log entries                                                     | releases, version, title, notes, tags, date   | yes                     | no → \`fullWidthBlocks\` |
+| \`driftwire.cta\`         | DriftwireCta.vue        | flag-art panel on night, left-aligned                                  | art, install                                  | yes                     | no → \`fullWidthBlocks\` |
+
+### 5.3 Chrome
+
+|                    | Choice              | Notes                                                                                             |
+| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------- |
+| Navigation         | shipped, on \`night\` | always navy, because the shipped logo can’t switch by colour scheme                               |
+| Footer             | shipped, on \`night\` | always navy, like a chart’s title block                                                           |
+| Mobile Safari tint |                     | the bar keeps the touch-device --studio-nuxt-body-color rule, and a blur must not be reintroduced |
+
+---
+
+## 6. Demo site
+
+Not planned in this brief.
+
+---
+
+## 7. Build plan
+
+1. [ ] **Fonts** — any missing families into fonts.js — \`npm run fonts:generate\`
+2. [ ] **Skeleton** — app and Studio folders, enabling lines, a first driftwire.hero block — \`npm run scaffold:theme -- driftwire\`
+3. [ ] **Tokens** — themes/driftwire/app/theme.css (§3.5–3.7)
+4. [ ] **Design content** — in a fresh dataset: swatches, Color Themes, Link Styles, Site theme set to driftwire — \`npm run cssvars:generate\`
+5. [ ] **Site-wide look** — type, buttons, frame, shipped blocks restyled. Check a page in both schemes
+6. [ ] **Art** — primitives and elements (§4)
+7. [ ] **Blocks** — one at a time (§5.2) — \`npm run scaffold:component -- driftwire.<block> --theme driftwire\`
+8. [ ] **Chrome** — navigation and footer (§5.3)
+9. [ ] **Tests** — test/unit/themes/driftwire/ for the theme’s pure helpers
+10. [ ] **Docs** — themes/README.md and CHANGELOG
+
+---
+
+## 8. QA before release
+
+**Correctness**
+
+- [ ] \`npm run check\` passes (lint, typecheck, tests, Studio build)
+- [ ] With the theme enabled but Site theme = None, the site looks exactly as before
+- [ ] Every theme block is insertable from the Studio under Theme: Driftwire and renders from an empty, freshly inserted state
+
+**Look**
+
+- [x] Every page in light and dark (or the one pinned scheme), toggled live, nothing stale
+- [ ] No hex in rendered markup; recolouring a swatch + \`cssvars:generate\` recolours the art
+- [x] 375px, 768px, 1280px, 1600px: no horizontal scroll, headlines fit
+- [ ] iOS Safari: status and toolbar strips tint correctly with the nav pinned
+- [ ] \`prefers-reduced-motion\`: all motion stops
+
+**Access and speed**
+
+- [ ] Contrast: body, muted text, accent-on-ground, button labels (both schemes)
+- [ ] Keyboard: every theme block’s interactive parts reachable and visible on focus
+- [ ] Lighthouse on home and a blog post: performance, accessibility, SEO
+- [ ] Static build (\`npm run generate\`) and server build (\`npm run build\`) both render the site
+
+---
+
+## Open questions
+
+- A trademark search and an IP lawyer’s view before 1.10 ships. (Owner)
+- Mobile Safari status and toolbar tint, on a device. (Owner)
+"
+`;
+
+exports[`renderThemeCss > matches the stored Driftwire output 1`] = `
+"/*
+ * Driftwire — A ship’s chart room: paper, navy ink and signal flags, where every release is a flag you hoist and can lower again.
+ *
+ * Starter generated from the theme brief. Sections match Driftwire's:
+ *   1. Tokens  2. Frame  3. Art primitives  4. Type and buttons  5. Shipped blocks
+ *
+ * Every site-wide rule starts with [data-nuxion-theme='driftwire'].
+ */
+
+@reference '../../../app/assets/css/main.css';
+
+/* ── 1. Tokens ── */
+
+[data-nuxion-theme='driftwire'] {
+    --container-8xl: 76rem;
+    --radius-card: 0.25rem;
+    --radius-panel: 0.25rem;
+    --radius-media: 0.125rem;
+    --shadow-media: none;
+    --radius-button: 2px;
+    --button-border-width: 1px;
+    --heading-weight: 500;
+}
+
+:root {
+    --dw-ground: var(--studio-nuxt-body-color);
+    --dw-ink: var(--studio-nuxt-text-color);
+    --dw-art-1: var(--studio-nuxt-dw-art-1, #b02a1a);
+    --dw-art-2: var(--studio-nuxt-dw-art-2, #1d4f91);
+    --dw-art-3: var(--studio-nuxt-dw-art-3, #f2b62b);
+    --dw-art-4: var(--studio-nuxt-dw-art-4, #fbf7ee);
+    --dw-art-5: var(--studio-nuxt-dw-art-5, #1b6f6f);
+    --dw-art-6: var(--studio-nuxt-dw-art-6, #d8c8a4);
+}
+
+.dw {
+    --dw-line: color-mix(in oklab, currentColor 11%, transparent);
+    --dw-line-strong: color-mix(in oklab, currentColor 20%, transparent);
+    --dw-muted: color-mix(in oklab, currentColor 76%, transparent);
+}
+
+/* ── 2. Frame ── */
+
+/* ── 3. Art primitives ── */
+
+/* alternating graduated blocks, as on a chart’s border */
+.dw-scale {
+}
+
+/* flat signal-flag panels in hard-edged geometry */
+.dw-flag {
+}
+
+/* chart depth lines, on a light ground */
+.dw-contours {
+}
+
+/* ── 4. Type and buttons ── */
+
+@layer components {
+    [data-nuxion-theme='driftwire'] .heading-1 {
+        font-size: 2.5rem;
+        line-height: 1.08;
+        letter-spacing: -0.01em;
+
+        @variant md {
+            font-size: 4.5rem;
+        }
+    }
+
+    [data-nuxion-theme='driftwire'] .heading-2 {
+        font-size: 2rem;
+        line-height: 1.12;
+        letter-spacing: -0.005em;
+
+        @variant md {
+            font-size: 3.25rem;
+        }
+    }
+
+    [data-nuxion-theme='driftwire'] .heading-3 {
+        font-size: 1.5rem;
+        line-height: 1.2;
+        letter-spacing: 0;
+
+        @variant md {
+            font-size: 1.875rem;
+        }
+    }
+
+    [data-nuxion-theme='driftwire'] .heading-4 {
+        font-size: 1.25rem;
+        line-height: 1.25;
+        letter-spacing: 0;
+
+        @variant md {
+            font-size: 1.5rem;
+        }
+    }
+
+    [data-nuxion-theme='driftwire'] .nuxion-paragraph {
+        font-size: 1rem;
+        line-height: 1.6;
+        letter-spacing: 0;
+
+        @variant md {
+            font-size: 1.0625rem;
+        }
+    }
+
+    [data-nuxion-theme='driftwire'] .dw-eyebrow {
+        font-size: 0.75rem;
+        line-height: 1.4;
+        letter-spacing: 0.08em;
+    }
+}
+
+/* ── 5. Shipped blocks, restyled ── */
+
+/* Form field corners */
+[data-nuxion-theme='driftwire']
+    [data-block='form.block']
+    :is(input, textarea, [role='combobox']) {
+    border-radius: 2px;
+}
+
+/* ruled rows, serif questions */
+[data-nuxion-theme='driftwire'] [data-block='faq'] {
+}
+
+/* Chart panels, serif quote, no drop shadow */
+[data-nuxion-theme='driftwire'] [data-block='testimonials'] {
+}
+
+/* Chart panels with real gaps */
+[data-nuxion-theme='driftwire'] [data-block='grid.base'] {
+}
+
+/* 2px corners, ruled inputs */
+[data-nuxion-theme='driftwire'] [data-block='form.block'] {
+}
+"
+`;
