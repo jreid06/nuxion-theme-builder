@@ -2,6 +2,7 @@
 import { fillNames, QA_GROUPS } from '~/services/brief/content'
 import type { OpenQuestion } from '~/services/brief/model'
 import { themeName, themeTitle } from '~/services/brief/names'
+import { briefFile } from '~/services/brief/persistence'
 import { allStudioOptions } from '~/services/export/studioContent'
 import { downloadText } from '~/services/utils/dom'
 
@@ -22,19 +23,9 @@ const qaLabel = (item: string) =>
         ''
     )
 
-const saveFile = () =>
-    downloadText(
-        `${brief.value.name || 'theme'}-brief.json`,
-        JSON.stringify(brief.value, null, 2)
-    )
-
-const openError = ref('')
-const openFile = async (event: Event) => {
-    const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
-    if (!file) return
-    openError.value = store.openFile(await file.text()) ?? ''
-    input.value = ''
+const saveFile = () => {
+    const { filename, text } = briefFile(brief.value)
+    downloadText(filename, text)
 }
 </script>
 
@@ -113,21 +104,15 @@ const openFile = async (event: Event) => {
     </SectionBlock>
     <SectionBlock
         title="Save or move this brief"
-        note="It saves in this browser as you type. Download a copy to back it up or open it elsewhere."
+        note="It saves in this browser as you type, and you’ll find it under All briefs. Download a copy to back it up or open it in another browser."
     >
         <div class="flex flex-wrap items-center gap-2">
             <button class="btn" type="button" @click="saveFile">
                 Download brief (.json)
             </button>
-            <label class="btn" for="open-brief">Open a saved brief</label>
-            <input
-                id="open-brief"
-                class="sr-only"
-                type="file"
-                accept="application/json,.json"
-                @change="openFile"
-            />
+            <button class="btn ghost" type="button" @click="store.closeBrief()">
+                Back to all briefs
+            </button>
         </div>
-        <div v-if="openError" class="hint" role="alert">{{ openError }}</div>
     </SectionBlock>
 </template>

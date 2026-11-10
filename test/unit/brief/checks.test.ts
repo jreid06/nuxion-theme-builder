@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { runChecks } from '~/services/brief/checks'
+import { SAFARI_TINTS } from '~/services/brief/content'
 import { headlineLines } from '~/services/brief/checks/typography'
 import { exampleBrief } from '~/services/brief/example'
 import { blankBrief, type Brief } from '~/services/brief/model'
@@ -121,6 +122,17 @@ describe('runChecks', () => {
         const brief = exampleBrief()
         brief.blocksOn = true
         expect(messages(brief).join()).toMatch(/driftwire\.cta: only the intro/)
+    })
+
+    it('asks for a bar colour when the status bar should match the bar', () => {
+        const brief = exampleBrief()
+        brief.blocksOn = true
+        brief.chrome.safari = SAFARI_TINTS.bar
+        expect(fieldsOf(brief, 'warn')).not.toContain('chrome.navTheme')
+        brief.chrome.navTheme = ''
+        expect(fieldsOf(brief, 'warn')).toContain('chrome.navTheme')
+        brief.chrome.safari = SAFARI_TINTS.page
+        expect(fieldsOf(brief, 'warn')).not.toContain('chrome.navTheme')
     })
 })
 

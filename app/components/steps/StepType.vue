@@ -2,6 +2,7 @@
 import { headlineLines } from '~/services/brief/checks/typography'
 import { typeRow, type TypeRow } from '~/services/brief/model'
 import { typeClass } from '~/services/brief/names'
+import { TYPE_SUGGESTIONS } from '~/services/inspire/typeScales'
 import { PHONE_WIDTH } from '~/services/preview/sitePreview'
 import { typeStyle } from '~/services/preview/styles'
 import { canvasTextMeasure, rowKey } from '~/services/utils/dom'
@@ -9,14 +10,46 @@ import { canvasTextMeasure, rowKey } from '~/services/utils/dom'
 const store = useBriefStore()
 const { brief } = storeToRefs(store)
 
+const list = (kind: keyof typeof TYPE_SUGGESTIONS) => `type-${kind}`
+
 const COLUMNS = [
     { key: 'cls', label: 'Class', width: '1.5fr', mono: true },
     { key: 'role', label: 'Role' },
-    { key: 'mobile', label: 'Mobile', width: '.9fr', mono: true },
-    { key: 'desktop', label: 'Desktop', width: '.9fr', mono: true },
-    { key: 'lh', label: 'Line ht', width: '.7fr', mono: true },
-    { key: 'tracking', label: 'Track', width: '.9fr', mono: true },
-    { key: 'weight', label: 'Wt', width: '.6fr', mono: true },
+    {
+        key: 'mobile',
+        label: 'Mobile',
+        width: '.9fr',
+        mono: true,
+        list: list('size'),
+    },
+    {
+        key: 'desktop',
+        label: 'Desktop',
+        width: '.9fr',
+        mono: true,
+        list: list('size'),
+    },
+    {
+        key: 'lh',
+        label: 'Line ht',
+        width: '.7fr',
+        mono: true,
+        list: list('lh'),
+    },
+    {
+        key: 'tracking',
+        label: 'Track',
+        width: '.9fr',
+        mono: true,
+        list: list('tracking'),
+    },
+    {
+        key: 'weight',
+        label: 'Wt',
+        width: '.6fr',
+        mono: true,
+        list: list('weight'),
+    },
 ]
 
 const specimens = computed(() =>
@@ -48,10 +81,23 @@ const headlineStyle = computed(() => {
         <FontPicker role-key="body" title="Body" />
         <FontPicker role-key="code" title="Code and labels" />
     </div>
+    <TypeScalePresets />
     <SectionBlock
         title="Type scale"
-        note="Delete rows you don’t need. Heading weight is one token, taken from the first row. {px} becomes your CSS prefix."
+        note="Delete rows you don’t need. Size, line height, tracking and weight cells list common values to pick from. Heading weight is one token, taken from the first row. {px} becomes your CSS prefix."
     >
+        <datalist
+            v-for="(options, kind) in TYPE_SUGGESTIONS"
+            :id="list(kind)"
+            :key="kind"
+        >
+            <option
+                v-for="option in options"
+                :key="option.value"
+                :value="option.value"
+                :label="option.label"
+            ></option>
+        </datalist>
         <EditableRows
             path="scale"
             :rows="brief.scale"

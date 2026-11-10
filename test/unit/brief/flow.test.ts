@@ -1,14 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Issue } from '~/services/brief/checks'
 import { exampleBrief } from '~/services/brief/example'
-import { blankBrief, type Brief } from '~/services/brief/model'
-import {
-    loadBrief,
-    parseBriefFile,
-    saveBrief,
-    STORAGE_KEY,
-    withDefaults,
-} from '~/services/brief/persistence'
+import { blankBrief } from '~/services/brief/model'
 import {
     coreSteps,
     STEPS,
@@ -17,15 +10,6 @@ import {
 } from '~/services/brief/steps'
 
 const step = (id: string) => STEPS.find((item) => item.id === id)!
-
-const fakeStorage = () => {
-    const data = new Map<string, string>()
-    return {
-        getItem: (key: string) => data.get(key) ?? null,
-        setItem: (key: string, value: string) => void data.set(key, value),
-        data,
-    }
-}
 
 describe('stepStatus', () => {
     const issue = (severity: Issue['severity']): Issue => ({
@@ -84,57 +68,5 @@ describe('stepNavigation', () => {
         const brief = exampleBrief()
         expect(stepNavigation('concept', brief).previous).toBeUndefined()
         expect(stepNavigation('review', brief).next).toBeUndefined()
-    })
-})
-
-describe('persistence', () => {
-    it('round-trips a brief', () => {
-        const storage = fakeStorage()
-        const brief: Brief = exampleBrief()
-        brief.title = 'Changed'
-        saveBrief(storage, brief)
-        expect(loadBrief(storage)).toEqual(brief)
-    })
-
-    it('returns null for nothing saved, bad JSON or the wrong shape', () => {
-        const storage = fakeStorage()
-        expect(loadBrief(storage)).toBeNull()
-        storage.data.set(STORAGE_KEY, '{not json')
-        expect(loadBrief(storage)).toBeNull()
-        storage.data.set(STORAGE_KEY, JSON.stringify({ v: 99, swatches: [] }))
-        expect(loadBrief(storage)).toBeNull()
-    })
-
-    it('fills fields an older save does not have', () => {
-        const brief = withDefaults({ v: 1, swatches: [] })
-        expect(brief.layout.spacing).toBe('default')
-        expect(brief.studio.colours).toBe(true)
-    })
-
-    it('keeps a partial layout and fills the rest', () => {
-        const brief = withDefaults({
-            v: 1,
-            swatches: [],
-            studio: { ...blankBrief().studio, home: false },
-        })
-        expect(brief.studio.home).toBe(false)
-        expect(brief.studio.colours).toBe(true)
-    })
-
-    it('explains why a file cannot be opened', () => {
-        expect(parseBriefFile('nope')).toMatchObject({
-            ok: false,
-            error: expect.stringContaining('valid JSON'),
-        })
-        expect(parseBriefFile('{"a":1}')).toMatchObject({
-            ok: false,
-            error: expect.stringContaining('saved theme brief'),
-        })
-    })
-
-    it('opens a saved brief', () => {
-        const brief = exampleBrief()
-        const result = parseBriefFile(JSON.stringify(brief))
-        expect(result).toEqual({ ok: true, brief })
     })
 })

@@ -1,3 +1,4 @@
+import { SAFARI_TINTS } from '../content'
 import type { Brief } from '../model'
 import { blockType, parseFields } from '../names'
 import { markdownRole } from '../nuxion'
@@ -33,6 +34,13 @@ export const checkBlocks = (brief: Brief): Issue[] => {
             'warn',
             'chrome.safari',
             'A custom navigation bar needs the touch-device tint rule for iOS Safari.'
+        )
+    }
+    if (brief.chrome.safari === SAFARI_TINTS.bar && !brief.chrome.navTheme) {
+        add(
+            'warn',
+            'chrome.navTheme',
+            'The status bar can only match the navigation bar if the bar has its own Color Theme. Pick one, or match the page instead.'
         )
     }
     return issues

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import { DRAFT_STEPS } from '~/services/ai/prompts'
 import { stepNavigation, type StepId } from '~/services/brief/steps'
 import StepArt from '../steps/StepArt.vue'
 import StepBlocks from '../steps/StepBlocks.vue'
@@ -45,6 +46,10 @@ watch(
 )
 
 const seePreview = () => document.querySelector('.live')?.scrollIntoView()
+
+const draftStep = computed(() =>
+    DRAFT_STEPS.find((step) => step === store.stepId)
+)
 </script>
 
 <template>
@@ -66,6 +71,11 @@ const seePreview = () => document.querySelector('.live')?.scrollIntoView()
                 <button class="btn sm jump" type="button" @click="seePreview">
                     See the preview
                 </button>
+                <DraftReview
+                    v-if="draftStep"
+                    :key="draftStep"
+                    :step="draftStep"
+                />
             </div>
             <IssueList
                 v-if="issues.length"

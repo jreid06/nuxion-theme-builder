@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ORIGINALITY_CHECKS } from '~/services/brief/content'
 import type { Feature } from '~/services/brief/model'
+import { fillPlaceholders, REF_HINTS } from '~/services/inspire/ideas'
 
 const { brief } = storeToRefs(useBriefStore())
 
@@ -19,7 +20,7 @@ const COLUMNS = [
             { value: 'site', label: 'Site-wide' },
         ],
     },
-    { key: 'ref', label: 'Delivered by', width: '1.4fr', mono: true },
+    { key: 'ref', label: 'Delivered by', width: '1.4fr' },
 ]
 
 const CHECKS = ORIGINALITY_CHECKS.map((check, index) => ({
@@ -37,6 +38,11 @@ const CHECKS = ORIGINALITY_CHECKS.map((check, index) => ({
         :rows="2"
         hint="Who builds what with it."
     />
+    <AssistBar
+        v-model="brief.positioning"
+        field="positioning"
+        label="Positioning"
+    />
     <TextField
         v-model="brief.audience"
         path="audience"
@@ -44,10 +50,12 @@ const CHECKS = ORIGINALITY_CHECKS.map((check, index) => ({
         :rows="2"
         hint="Who will build sites with it, and how well they know the stack."
     />
+    <AssistBar v-model="brief.audience" field="audience" label="Audience" />
     <SectionBlock
         title="Signature features"
         note="Three to five. Each has to be a theme block, an art primitive or a site-wide treatment."
     >
+        <IdeaDeck />
         <EditableRows
             path="features"
             :rows="brief.features"
@@ -55,7 +63,17 @@ const CHECKS = ORIGINALITY_CHECKS.map((check, index) => ({
             :make="makeFeature"
             add-label="Add feature"
             empty="No features yet. What would someone recognise this theme by?"
-        />
+        >
+            <template #cell-ref="{ row, path }">
+                <BaseInput
+                    v-model="row.ref"
+                    :path="path"
+                    mono
+                    aria-label="Delivered by"
+                    :placeholder="fillPlaceholders(REF_HINTS[row.kind], brief)"
+                />
+            </template>
+        </EditableRows>
     </SectionBlock>
     <TextField
         v-model="brief.refs"
@@ -64,6 +82,7 @@ const CHECKS = ORIGINALITY_CHECKS.map((check, index) => ({
         :rows="2"
         hint="For orientation only. Never have one open while drawing."
     />
+    <AssistBar v-model="brief.refs" field="refs" label="Reference brands" />
     <SectionBlock
         title="Originality"
         note="A theme ships on real sites, so it has to be its own thing."

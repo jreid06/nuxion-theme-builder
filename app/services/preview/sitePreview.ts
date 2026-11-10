@@ -24,6 +24,12 @@ const NEUTRAL: ColorSlots = {
 
 const NAV_LINKS = ['Features', 'Pricing', 'Blog', 'Contact']
 
+const PLACEHOLDER_FEATURES = [
+    'Signature feature one',
+    'Signature feature two',
+    'Signature feature three',
+]
+
 const SHIPPED_HEADINGS: Record<string, { phone: string; desktop: string }> = {
     '.heading-1': { phone: '1.875rem', desktop: '3.75rem' },
     '.heading-2': { phone: '1.5rem', desktop: '2.25rem' },
@@ -99,6 +105,9 @@ export const sitePreview = (
             label: preset.name,
             style: buttonStyle(brief, preset, colors, scheme),
         })
+    const features = brief.features
+        .map((feature) => feature.text.trim())
+        .filter(Boolean)
     const filled = brief.buttons.filter((preset) => preset.style !== 'default')
     const closing = brief.buttons[1] ?? brief.buttons[0]
 
@@ -135,12 +144,11 @@ export const sitePreview = (
         art: artSwatches.length ? artSwatches : hexSwatches.slice(0, 5),
         heroButtons: filled.slice(0, phone ? 2 : 3).map(asButton(canvas)),
         closingButton: closing ? asButton(night)(closing) : undefined,
-        features: brief.features.length
-            ? brief.features.slice(0, 3).map((feature) => feature.text)
-            : [
-                  'Signature feature one',
-                  'Signature feature two',
-                  'Signature feature three',
-              ],
+        /** Columns can shrink below their longest word, so nothing spills off a phone. */
+        heroColumns: phone
+            ? 'minmax(0, 1fr)'
+            : 'minmax(0, 1.15fr) minmax(0, 1fr)',
+        featureColumns: phone ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
+        features: features.length ? features : PLACEHOLDER_FEATURES,
     }
 }

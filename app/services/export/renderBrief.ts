@@ -23,6 +23,7 @@ import type {
 import { blockType, pascalCase, typeClass } from '../brief/names'
 import { swatchName } from '../brief/resolve'
 import type { StepId } from '../brief/steps'
+import { describeDirection } from '../inspire/direction'
 import { inlineCode as code, markdownTable as table } from './markdown'
 
 /** The brief as Markdown, section by section, in the template's layout. */
@@ -54,6 +55,7 @@ ${table(
         ['**Dark scheme**', brief.dark],
         ['**Status**', brief.status],
         ['**Target release**', `Nuxion v${brief.release || '<x.y>'}`],
+        ['**Direction**', describeDirection(brief) || 'not chosen'],
     ]
 )}`
 }

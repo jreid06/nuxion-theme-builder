@@ -13,6 +13,7 @@ exports[`renderBrief > matches the stored Driftwire output 1`] = `
 | **Dark scheme**          | full                                                                                    |
 | **Status**               | demo                                                                                    |
 | **Target release**       | Nuxion v1.10                                                                            |
+| **Direction**            | Editorial, Technical, Calm · Software and tech                                          |
 
 ---
 
@@ -223,12 +224,12 @@ Generated from the palette.
 
 ### 5.1 Shipped blocks, restyled
 
-| \`_type\`        | Treatment                                 |
-| -------------- | ----------------------------------------- |
-| \`faq\`          | ruled rows, serif questions               |
-| \`testimonials\` | Chart panels, serif quote, no drop shadow |
-| \`grid.base\`    | Chart panels with real gaps               |
-| \`form.block\`   | 2px corners, ruled inputs                 |
+| \`_type\`        | Treatment                                                 |
+| -------------- | --------------------------------------------------------- |
+| \`faq\`          | Ruled lines between items; Questions in the heading font  |
+| \`testimonials\` | Quote in the heading font; Flat, no shadows; chart panels |
+| \`grid.base\`    | Real gaps between cells; chart panels                     |
+| \`form.block\`   | Underlined inputs, no boxes; 2px corners                  |
 
 ### 5.2 Theme blocks
 
@@ -434,19 +435,19 @@ exports[`renderThemeCss > matches the stored Driftwire output 1`] = `
     border-radius: 2px;
 }
 
-/* ruled rows, serif questions */
+/* Ruled lines between items; Questions in the heading font */
 [data-nuxion-theme='driftwire'] [data-block='faq'] {
 }
 
-/* Chart panels, serif quote, no drop shadow */
+/* Quote in the heading font; Flat, no shadows; chart panels */
 [data-nuxion-theme='driftwire'] [data-block='testimonials'] {
 }
 
-/* Chart panels with real gaps */
+/* Real gaps between cells; chart panels */
 [data-nuxion-theme='driftwire'] [data-block='grid.base'] {
 }
 
-/* 2px corners, ruled inputs */
+/* Underlined inputs, no boxes; 2px corners */
 [data-nuxion-theme='driftwire'] [data-block='form.block'] {
 }
 "

@@ -31,6 +31,7 @@ const setHex = (row: Swatch, event: Event) => {
 </script>
 
 <template>
+    <PalettePresets />
     <EditableRows
         path="swatches"
         :rows="brief.swatches"

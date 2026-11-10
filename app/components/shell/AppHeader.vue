@@ -2,21 +2,17 @@
 import { isHex } from '~/services/brief/colour'
 
 const store = useBriefStore()
-const confirming = ref(false)
+const claude = useClaudeStore()
 
+const open = computed(() => store.currentId !== null)
 const warnings = computed(() => store.issues.length - store.errorCount)
 const readiness = computed(() => {
     if (store.errorCount) return 'error'
     return warnings.value ? 'warn' : ''
 })
 const colourBar = computed(() =>
-    store.brief.swatches.filter((swatch) => isHex(swatch.hex))
+    open.value ? store.brief.swatches.filter((swatch) => isHex(swatch.hex)) : []
 )
-
-const replaceWith = (action: () => void) => {
-    action()
-    confirming.value = false
-}
 </script>
 
 <template>
@@ -25,59 +21,47 @@ const replaceWith = (action: () => void) => {
             Theme Builder
             <small>
                 {{
-                    store.brief.title
-                        ? `${store.brief.title} · ${store.brief.status}`
-                        : 'New theme'
+                    !open
+                        ? 'Your briefs'
+                        : store.brief.title
+                          ? `${store.brief.title} · ${store.brief.status}`
+                          : 'Untitled theme'
                 }}
             </small>
         </div>
-        <span v-if="store.brief.example" class="tag">
+        <span v-if="open && store.brief.example" class="tag">
             Example: Nuxion’s Driftwire
         </span>
         <span class="sp"></span>
-        <span class="hint">
-            {{
-                store.storageAvailable
-                    ? 'Saved in this browser'
-                    : 'Not saved: browser storage is off'
-            }}
-        </span>
         <button
             class="pill"
-            :class="readiness"
+            :class="claude.connected ? 'ai' : 'plain'"
             type="button"
-            @click="store.panel = 'issues'"
+            @click="claude.openSheet()"
         >
-            Readiness: {{ store.errorCount }} blocking · {{ warnings }} to
-            review
+            {{ claude.connected ? 'Claude connected' : 'Connect Claude' }}
         </button>
-        <template v-if="confirming">
-            <span class="hint">Replace this brief?</span>
+        <template v-if="open">
+            <span class="hint">
+                {{
+                    store.storageAvailable
+                        ? 'Saved in this browser'
+                        : 'Not saved: browser storage is off'
+                }}
+            </span>
             <button
-                class="btn sm pri"
+                class="pill"
+                :class="readiness"
                 type="button"
-                @click="replaceWith(store.startBlank)"
+                @click="store.panel = 'issues'"
             >
-                Start blank
+                Readiness: {{ store.errorCount }} blocking · {{ warnings }} to
+                review
             </button>
-            <button
-                class="btn sm"
-                type="button"
-                @click="replaceWith(store.loadExample)"
-            >
-                Reload example
-            </button>
-            <button
-                class="btn sm ghost"
-                type="button"
-                @click="confirming = false"
-            >
-                Keep editing
+            <button class="btn sm" type="button" @click="store.closeBrief()">
+                All briefs
             </button>
         </template>
-        <button v-else class="btn sm" type="button" @click="confirming = true">
-            New brief
-        </button>
         <div class="bar" aria-hidden="true">
             <i
                 v-for="swatch in colourBar"

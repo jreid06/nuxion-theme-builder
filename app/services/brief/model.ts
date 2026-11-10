@@ -180,6 +180,8 @@ export interface Brief {
     name: string
     px: string
     mood: string
+    /** Mood words and a sector: what the idea tools and Claude tune to. */
+    direction: Direction
     scheme: DefaultScheme
     dark: DarkMode
     status: string
@@ -211,6 +213,11 @@ export interface Brief {
     next: Record<string, boolean>
     qa: Record<string, boolean>
     questions: OpenQuestion[]
+}
+
+export interface Direction {
+    vibes: string[]
+    sector: string
 }
 
 export const emptySlots = (): ColorSlots => ({ bg: '', text: '', accent: '' })
@@ -277,6 +284,7 @@ export const blankBrief = (): Brief => ({
     name: '',
     px: '',
     mood: '',
+    direction: { vibes: [], sector: '' },
     scheme: 'system',
     dark: 'full',
     status: 'brief',

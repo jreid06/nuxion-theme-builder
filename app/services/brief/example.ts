@@ -37,6 +37,10 @@ export const exampleBrief = (): Brief => ({
     dark: 'full',
     status: 'demo',
     release: '1.10',
+    direction: {
+        vibes: ['editorial', 'technical', 'calm'],
+        sector: 'software',
+    },
     positioning:
         'Marketing sites for software and developer tools that would rather look considered than look like every other dark SaaS page.',
     audience:
@@ -454,13 +458,24 @@ export const exampleBrief = (): Brief => ({
         ],
     },
     restyled: [
-        { type: 'faq', treatment: 'ruled rows, serif questions' },
+        {
+            type: 'faq',
+            treatment:
+                'Ruled lines between items; Questions in the heading font',
+        },
         {
             type: 'testimonials',
-            treatment: 'Chart panels, serif quote, no drop shadow',
+            treatment:
+                'Quote in the heading font; Flat, no shadows; chart panels',
         },
-        { type: 'grid.base', treatment: 'Chart panels with real gaps' },
-        { type: 'form.block', treatment: '2px corners, ruled inputs' },
+        {
+            type: 'grid.base',
+            treatment: 'Real gaps between cells; chart panels',
+        },
+        {
+            type: 'form.block',
+            treatment: 'Underlined inputs, no boxes; 2px corners',
+        },
     ],
     blocks: [
         {

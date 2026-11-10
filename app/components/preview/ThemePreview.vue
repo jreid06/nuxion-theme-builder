@@ -78,11 +78,7 @@ onBeforeUnmount(() => observer?.disconnect())
                 <div class="pv-in" :style="{ maxWidth: site.maxWidth }">
                     <div
                         class="pv-hero"
-                        :style="{
-                            gridTemplateColumns: site.phone
-                                ? '1fr'
-                                : '1.15fr 1fr',
-                        }"
+                        :style="{ gridTemplateColumns: site.heroColumns }"
                     >
                         <div class="pv-in">
                             <div
@@ -148,15 +144,11 @@ onBeforeUnmount(() => observer?.disconnect())
                     <div :style="site.h2">Built for this canvas</div>
                     <div
                         class="pv-cols"
-                        :style="{
-                            gridTemplateColumns: site.phone
-                                ? '1fr'
-                                : 'repeat(3, 1fr)',
-                        }"
+                        :style="{ gridTemplateColumns: site.featureColumns }"
                     >
                         <div
-                            v-for="feature in site.features"
-                            :key="feature"
+                            v-for="(feature, index) in site.features"
+                            :key="index"
                             class="pv-card"
                             :style="{
                                 borderRadius: site.cardRadius,

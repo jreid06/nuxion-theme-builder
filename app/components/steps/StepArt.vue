@@ -160,6 +160,7 @@ const ASSET_COLUMNS = [
         :rows="2"
         hint="This goes straight into the brief."
     />
+    <AssistBar v-model="art.note" field="artNote" label="Imagery note" />
     <SectionBlock
         title="CSS primitives"
         :note="`One row per pattern. Colour it with the generated variables, such as --${px}-art-1, so a recolour reaches it. Any motion must stop under prefers-reduced-motion.`"

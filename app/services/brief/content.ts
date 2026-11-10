@@ -136,3 +136,9 @@ export const KEEP_WORDS: Record<KeepStrength, string> = {
 
 export const fillNames = (text: string, name: string, title: string) =>
     text.replace(/\{name\}/g, name).replace(/\{Title\}/g, title)
+
+/** The two ways to settle the iPhone status-bar colour, worded for the brief. */
+export const SAFARI_TINTS = {
+    page: 'Matches the page: on touch screens the bar takes the page background and drops its blur.',
+    bar: 'Matches the bar: the bar keeps a solid background from its Color Theme, with no blur.',
+} as const

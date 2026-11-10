@@ -81,6 +81,8 @@ const nameHint = computed(() => {
         placeholder="A ship’s chart room: paper, navy ink and signal flags."
         hint="Be concrete. Name a place, a material or an object."
     />
+    <AssistBar v-model="brief.mood" field="mood" label="Mood line" />
+    <DirectionPicker />
     <div class="grid2">
         <SegmentedField
             v-model="brief.scheme"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { SAFARI_TINTS } from '~/services/brief/content'
 import type { RestyledBlock, ThemeBlock } from '~/services/brief/model'
 import { pascalCase, themeName } from '~/services/brief/names'
 import { SHIPPED_BLOCKS } from '~/services/brief/nuxion'
@@ -81,10 +82,6 @@ const fieldGuide = computed((): [string, string][] => {
     ]
 })
 
-const RESTYLE_COLUMNS = [
-    { key: 'type', label: '_type', mono: true, list: 'shipped-blocks' },
-    { key: 'treatment', label: 'Treatment', width: '2fr' },
-]
 const makeRestyle = (): RestyledBlock => ({ type: '', treatment: '' })
 const makeBlock = (): ThemeBlock => ({
     slug: '',
@@ -93,6 +90,16 @@ const makeBlock = (): ThemeBlock => ({
     projection: false,
     fullWidth: false,
 })
+
+const store = useBriefStore()
+const tints = Object.values(SAFARI_TINTS).map((text) => ({
+    item: { text },
+    suits: false,
+}))
+const pickTint = (text: string) =>
+    store.change('iPhone status-bar colour', (target) => {
+        target.chrome.safari = text
+    })
 
 const chromeThemes = computed(() => [
     { value: '', label: 'Page theme' },
@@ -132,23 +139,33 @@ const chromeThemes = computed(() => [
         <HowToCard
             title="How to use this step"
             :items="[
-                'List each shipped block the design uses, and write one line on how it should change.',
+                'Add each shipped block the design changes, then tick how it should change, or choose Custom to say it in your own words.',
                 'For anything a shipped block can’t do, add a theme block and fill in its card.',
                 'Choose the navigation and footer at the bottom of this step.',
             ]"
         />
         <SectionBlock
             title="Shipped blocks, restyled"
-            note="Pick a block from the list, then describe the change. Any shipped block you leave out keeps the site-wide type, colour and shape."
+            note="Pick a block, then tick the changes you want. Options with a dot suit your direction. Each becomes a line in BRIEF.md and an empty rule in theme.css for the builder to fill. Any shipped block you leave out keeps the site-wide type, colour and shape."
+            field="restyled"
         >
-            <EditableRows
-                path="restyled"
-                :rows="brief.restyled"
-                :columns="RESTYLE_COLUMNS"
-                :make="makeRestyle"
-                add-label="Add restyle"
-                empty="Nothing restyled yet."
+            <div v-if="!brief.restyled.length" class="empty">
+                Nothing restyled yet.
+            </div>
+            <RestyleCard
+                v-for="(block, index) in brief.restyled"
+                :key="rowKey(block)"
+                :block="block"
+                :index="index"
+                @remove="brief.restyled.splice(index, 1)"
             />
+            <button
+                class="btn sm add"
+                type="button"
+                @click="brief.restyled.push(makeRestyle())"
+            >
+                Add restyle
+            </button>
         </SectionBlock>
         <SectionBlock
             title="Theme blocks"
@@ -204,7 +221,15 @@ const chromeThemes = computed(() => [
                     <TextField
                         v-model="brief.chrome.navNote"
                         path="chrome.navNote"
-                        label="Notes"
+                        label="What changes, and why"
+                        :rows="2"
+                        placeholder="e.g. always on the night theme, because the logo can’t switch with the colour scheme"
+                        hint="For whoever builds the theme: how this bar differs from Nuxion’s shipped one (logo, links, colour, pinning, the phone menu) and the reason. Goes into BRIEF.md §5.3."
+                    />
+                    <AssistBar
+                        v-model="brief.chrome.navNote"
+                        field="navNote"
+                        label="Navigation notes"
                     />
                 </div>
                 <div class="field">
@@ -227,15 +252,39 @@ const chromeThemes = computed(() => [
                     <TextField
                         v-model="brief.chrome.footerNote"
                         path="chrome.footerNote"
-                        label="Notes"
+                        label="What changes, and why"
+                        :rows="2"
+                        placeholder="e.g. a large wordmark across the full width at the bottom"
+                        hint="For whoever builds the theme: how this footer differs from Nuxion’s shipped one (layout, links, colour, sign-up) and the reason. Goes into BRIEF.md §5.3."
+                    />
+                    <AssistBar
+                        v-model="brief.chrome.footerNote"
+                        field="footerNote"
+                        label="Footer notes"
                     />
                 </div>
             </div>
+        </SectionBlock>
+        <SectionBlock
+            title="iPhone status-bar colour"
+            note="On iPhones, Safari colours the strip behind the clock to blend with your site. It takes that colour from a bar pinned to the top of the page, so the navigation bar decides it. If the bar is see-through or blurred, Safari falls back to plain grey. Choose what the strip should match; the bar’s CSS then has to follow it."
+        >
+            <ChoiceChips
+                :choices="tints"
+                :selected="brief.chrome.safari"
+                @pick="pickTint"
+            />
             <TextField
                 v-model="brief.chrome.safari"
                 path="chrome.safari"
-                label="Mobile Safari tint"
-                hint="Top-pinned chrome hijacks the iOS status-bar colour unless it carries the touch-device rule."
+                label="Or say it in your own words"
+                :rows="2"
+                hint="Goes into BRIEF.md §5.3 as Mobile Safari tint."
+            />
+            <AssistBar
+                v-model="brief.chrome.safari"
+                field="safari"
+                label="iPhone status-bar colour"
             />
         </SectionBlock>
     </template>
