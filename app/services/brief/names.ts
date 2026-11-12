@@ -30,12 +30,6 @@ export const themeTitle = (brief: Brief) => brief.title || '<Theme>'
 export const blockType = (brief: Brief, block: ThemeBlock) =>
     `${brief.name || 'theme'}.${block.slug}`
 
-export const parseFields = (fields: string) =>
-    fields
-        .split(',')
-        .map((field) => field.trim())
-        .filter(Boolean)
-
 export const fontStack = (font: FontChoice) =>
     font.family ? `'${font.family}', ${font.fallback || 'sans-serif'}` : ''
 

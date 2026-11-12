@@ -1,14 +1,36 @@
 import {
+    blankAnswers,
     blankBrief,
+    blockField,
     buttonPreset as button,
     colorTheme,
+    themeBlock,
     typeRow,
+    type BlockField,
     type Brief,
     type ColorSlots,
     type Swatch,
+    type ThemeBlock,
 } from './model'
 
 /** Driftwire, the theme Nuxion ships, as the worked example the app opens on. */
+
+/** A full-width theme block whose interview names only its job. */
+const exampleBlock = (
+    slug: string,
+    purpose: string,
+    job: string,
+    fields: BlockField[]
+): ThemeBlock => ({
+    ...themeBlock(slug, purpose, fields),
+    answers: {
+        ...blankAnswers(),
+        job,
+        shape: fields.some((field) => field.type === 'list')
+            ? 'list'
+            : 'single',
+    },
+})
 
 const swatch = (
     id: string,
@@ -478,70 +500,104 @@ export const exampleBrief = (): Brief => ({
         },
     ],
     blocks: [
-        {
-            slug: 'hero',
-            purpose:
-                'two columns, text left and signal board right; logos a plain row below',
-            fields: 'announcement, consoleFlags, logos',
-            projection: true,
-            fullWidth: true,
-        },
-        {
-            slug: 'bento',
-            purpose: 'asymmetric panels with gaps',
-            fields: 'cells, title, body, metric',
-            projection: false,
-            fullWidth: true,
-        },
-        {
-            slug: 'code-window',
-            purpose: 'code left, intro right, light panel in the light scheme',
-            fields: 'tabs, points, title, body',
-            projection: false,
-            fullWidth: true,
-        },
-        {
-            slug: 'stories',
-            purpose: 'editorial quote list with ruled separators',
-            fields: 'stories, name, role, quote, company, result',
-            projection: true,
-            fullWidth: true,
-        },
-        {
-            slug: 'metrics',
-            purpose: 'logbook figures in a ruled row',
-            fields: 'stats, value, label, note',
-            projection: false,
-            fullWidth: true,
-        },
-        {
-            slug: 'logo-cloud',
-            purpose: 'ruled table of integration categories',
-            fields: 'items, name, icon',
-            projection: true,
-            fullWidth: true,
-        },
-        {
-            slug: 'pricing',
-            purpose: 'ledger columns, billing switch and comparison table',
-            fields: 'tiers, name, monthly, blurb, includes, groups',
-            projection: true,
-            fullWidth: true,
-        },
-        {
-            slug: 'timeline',
-            purpose: 'ship’s-log entries',
-            fields: 'releases, version, title, notes, tags, date',
-            projection: true,
-            fullWidth: true,
-        },
-        {
-            slug: 'cta',
-            purpose: 'flag-art panel on night, left-aligned',
-            fields: 'art, install',
-            projection: true,
-            fullWidth: true,
-        },
+        exampleBlock(
+            'hero',
+            'two columns, text left and signal board right; logos a plain row below',
+            'introduce',
+            [
+                blockField('announcement', 'link'),
+                blockField('items', 'list', false, [
+                    blockField('label', 'string', true),
+                    blockField('value'),
+                ]),
+                blockField('logos', 'list', false, [
+                    blockField('name', 'string', true),
+                    blockField('image', 'image'),
+                ]),
+            ]
+        ),
+        exampleBlock('bento', 'asymmetric panels with gaps', 'features', [
+            blockField('cells', 'list', false, [
+                blockField('title', 'string', true),
+                blockField('body', 'text'),
+                blockField('value'),
+            ]),
+        ]),
+        exampleBlock(
+            'code-window',
+            'code left, intro right, light panel in the light scheme',
+            'how',
+            [
+                blockField('code', 'text'),
+                blockField('points', 'list', false, [
+                    blockField('title', 'string', true),
+                    blockField('body', 'text'),
+                ]),
+            ]
+        ),
+        exampleBlock(
+            'stories',
+            'editorial quote list with ruled separators',
+            'quotes',
+            [
+                blockField('stories', 'list', false, [
+                    blockField('name', 'string', true),
+                    blockField('role'),
+                    blockField('quote', 'text'),
+                    blockField('result'),
+                    blockField('link', 'link'),
+                ]),
+            ]
+        ),
+        exampleBlock('metrics', 'logbook figures in a ruled row', 'prove', [
+            blockField('stats', 'list', false, [
+                blockField('value', 'string', true),
+                blockField('label'),
+                blockField('note', 'text'),
+            ]),
+        ]),
+        exampleBlock(
+            'logo-cloud',
+            'ruled table of integration categories',
+            'work',
+            [
+                blockField('items', 'list', false, [
+                    blockField('name', 'string', true),
+                    blockField('image', 'image'),
+                    blockField('link', 'link'),
+                ]),
+            ]
+        ),
+        exampleBlock(
+            'pricing',
+            'ledger columns, billing switch and comparison table',
+            'compare',
+            [
+                blockField('tiers', 'list', false, [
+                    blockField('name', 'string', true),
+                    blockField('monthly'),
+                    blockField('blurb', 'text'),
+                    blockField('content', 'portable-text'),
+                    blockField('link', 'link'),
+                    blockField('highlighted', 'boolean'),
+                ]),
+                blockField('toggle', 'boolean'),
+            ]
+        ),
+        exampleBlock('timeline', 'ship’s-log entries', 'story', [
+            blockField('releases', 'list', false, [
+                blockField('version', 'string', true),
+                blockField('title'),
+                blockField('date'),
+                blockField('notes', 'portable-text'),
+            ]),
+        ]),
+        exampleBlock(
+            'cta',
+            'flag-art panel on night, left-aligned',
+            'convert',
+            [blockField('install')]
+        ),
     ],
     chrome: {
         nav: 'shipped',

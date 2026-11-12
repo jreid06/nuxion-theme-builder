@@ -1,4 +1,7 @@
-import type { Brief } from '../brief/model'
+import { blankAnswers, type Brief, type ThemeBlock } from '../brief/model'
+import { slugify } from '../brief/names'
+import { SHIPPED_BLOCKS } from '../brief/nuxion'
+import { fieldsFromAnswers } from '../inspire/blockInterview'
 import {
     featureFromIdea,
     fillPlaceholders,
@@ -7,6 +10,7 @@ import {
 import type { DraftStep } from './prompts'
 import type {
     ArtDraft,
+    BlockPlan,
     ConceptDraft,
     DraftAnswer,
     FeatureAnswer,
@@ -72,6 +76,68 @@ const ruleProposals = (brief: Brief, rules: RuleAnswer[]) =>
         replaces: false,
         apply: (target) => target.rules.push(ruleFromAnswer(target, rule)),
     }))
+
+/** A planned block's slug, without the codename Claude sometimes adds. */
+const planSlug = (brief: Brief, slug: string) =>
+    slugify(slug.replace(new RegExp(`^${brief.name || 'theme'}\\.`), ''))
+
+export const blockFromPlan = (
+    brief: Brief,
+    planned: BlockPlan['build'][number]
+): ThemeBlock => {
+    const answers = { ...blankAnswers(), ...planned.answers }
+    return {
+        slug: planSlug(brief, planned.slug),
+        purpose: planned.purpose,
+        answers,
+        fields: fieldsFromAnswers(answers),
+        fullWidth: planned.fullWidth,
+    }
+}
+
+/** A shipped block to restyle or a theme block to build, one proposal each. */
+const blockPlanProposals = (brief: Brief, plan: BlockPlan): Proposal[] => {
+    const restyled = new Set(brief.restyled.map((block) => block.type))
+    const planned = new Set(brief.blocks.map((block) => block.slug))
+    const name = brief.name || 'theme'
+    return [
+        ...plan.restyle
+            .filter((item) => {
+                if (!SHIPPED_BLOCKS.includes(item.type)) return false
+                if (restyled.has(item.type)) return false
+                restyled.add(item.type)
+                return true
+            })
+            .map((item, index): Proposal => ({
+                id: `restyle-${index}`,
+                label: `Restyle ${item.type}`,
+                text: `${item.treatment} (${item.why})`,
+                replaces: false,
+                apply: (target) => {
+                    target.restyled.push({
+                        type: item.type,
+                        treatment: item.treatment,
+                    })
+                },
+            })),
+        ...plan.build
+            .filter((item) => {
+                const slug = planSlug(brief, item.slug)
+                if (!slug || planned.has(slug)) return false
+                planned.add(slug)
+                return true
+            })
+            .map((item, index): Proposal => ({
+                id: `build-${index}`,
+                label: `Build ${name}.${planSlug(brief, item.slug)}`,
+                text: `${item.purpose} (${item.why})`,
+                replaces: false,
+                apply: (target) => {
+                    target.blocks.push(blockFromPlan(target, item))
+                },
+            })),
+    ]
+}
 
 export const draftProposals = (
     step: DraftStep,
@@ -190,6 +256,8 @@ export const draftProposals = (
                 })),
             ]
         }
+        case 'blocks':
+            return blockPlanProposals(brief, answer as BlockPlan)
     }
 }
 

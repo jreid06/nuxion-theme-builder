@@ -1,4 +1,12 @@
 import * as z from 'zod'
+import { SCAFFOLD } from '../brief/blockFields'
+import {
+    ACTIONS,
+    ITEM_PARTS,
+    JOBS,
+    SECTION_PARTS,
+    type InterviewOption,
+} from '../inspire/blockInterview'
 import { SECTOR_IDS, VIBE_IDS } from '../inspire/direction'
 import { PALETTE_ROLES } from '../inspire/palettes'
 
@@ -73,6 +81,52 @@ export const paletteSchema = z.object({
     ),
 })
 
+type Choices = [string, ...string[]]
+const ids = (options: InterviewOption[]) =>
+    options.map((option) => option.id) as Choices
+
+export const blockAnswersSchema = z.object({
+    job: z.enum(ids(JOBS)),
+    shape: z.enum(['single', 'list', 'both']),
+    itemParts: z.array(z.enum(ids(ITEM_PARTS))),
+    sectionParts: z.array(z.enum(ids(SECTION_PARTS))),
+    actions: z.array(z.enum(ids(ACTIONS))),
+})
+
+export const blockPlanSchema = z.object({
+    restyle: z.array(
+        z.object({ type: z.string(), treatment: z.string(), why: z.string() })
+    ),
+    build: z.array(
+        z.object({
+            slug: z.string(),
+            purpose: z.string(),
+            why: z.string(),
+            fullWidth: z.boolean(),
+            answers: blockAnswersSchema,
+        })
+    ),
+})
+
+const itemFieldSchema = z.object({
+    name: z.string(),
+    type: z.enum(SCAFFOLD.types.filter((type) => type !== 'list') as Choices),
+    required: z.boolean(),
+})
+
+/** Every field has `of`, empty unless it is a list: no optional keys to miss. */
+export const blockFieldsSchema = z.object({
+    fields: z.array(
+        z.object({
+            name: z.string(),
+            type: z.enum(SCAFFOLD.types as Choices),
+            required: z.boolean(),
+            of: z.array(itemFieldSchema),
+            note: z.string(),
+        })
+    ),
+})
+
 export type Suggestions = z.infer<typeof suggestionsSchema>
 export type FeatureAnswer = z.infer<typeof featureSchema>
 export type RuleAnswer = z.infer<typeof ruleSchema>
@@ -81,4 +135,7 @@ export type ProductDraft = z.infer<typeof productDraftSchema>
 export type IdentityDraft = z.infer<typeof identityDraftSchema>
 export type ArtDraft = z.infer<typeof artDraftSchema>
 export type PaletteAnswer = z.infer<typeof paletteSchema>
-export type DraftAnswer = ConceptDraft | ProductDraft | IdentityDraft | ArtDraft
+export type BlockPlan = z.infer<typeof blockPlanSchema>
+export type BlockFieldsAnswer = z.infer<typeof blockFieldsSchema>
+export type DraftAnswer =
+    ConceptDraft | ProductDraft | IdentityDraft | ArtDraft | BlockPlan

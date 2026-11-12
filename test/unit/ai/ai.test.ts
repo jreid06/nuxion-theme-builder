@@ -12,9 +12,11 @@ import {
     readKey,
     saveKey,
 } from '~/services/ai/keyStorage'
+import { designFields, keepValidFields } from '~/services/ai/blockDesign'
 import { generatePalette } from '~/services/ai/palette'
 import {
     briefContext,
+    blockFieldsRequest,
     draftRequest,
     fieldRequest,
     paletteRequest,
@@ -260,5 +262,152 @@ describe('key storage', () => {
         saveKey(stores, 'sk-a', true)
         clearKey(stores)
         expect(readKey(stores)).toEqual({ key: '', remember: false })
+    })
+})
+
+describe('block planning', () => {
+    const plan = {
+        restyle: [
+            { type: 'faq', treatment: 'Ruled rows', why: 'Already restyled' },
+            { type: 'stats', treatment: 'Big figures', why: 'Proof' },
+            { type: 'made-up', treatment: 'x', why: 'Not shipped' },
+        ],
+        build: [
+            {
+                slug: 'driftwire.Log Book',
+                purpose: 'Releases as log entries',
+                why: 'The changelog feature',
+                fullWidth: true,
+                answers: {
+                    job: 'story',
+                    shape: 'list',
+                    itemParts: ['date', 'title', 'text'],
+                    sectionParts: [],
+                    actions: [],
+                },
+            },
+            {
+                slug: 'pricing',
+                purpose: 'Already planned',
+                why: 'x',
+                fullWidth: true,
+                answers: {
+                    job: 'compare',
+                    shape: 'list',
+                    itemParts: [],
+                    sectionParts: [],
+                    actions: [],
+                },
+            },
+        ],
+    }
+
+    it('asks for a plan with the shipped blocks listed', () => {
+        const request = draftRequest('blocks', exampleBrief())
+        expect(request.prompt).toMatch(/Plan the page blocks/)
+        expect(request.prompt).toContain('testimonials')
+        expect(request.effort).toBe('medium')
+    })
+
+    it('offers only shipped, unrestyled blocks and unplanned theme blocks', () => {
+        const brief = exampleBrief()
+        const proposals = draftProposals('blocks', brief, plan)
+        expect(proposals.map((proposal) => proposal.label)).toEqual([
+            'Restyle stats',
+            'Build driftwire.log-book',
+        ])
+        expect(defaultSelection(proposals).size).toBe(2)
+    })
+
+    it('adds a planned block with fields made from its answers', () => {
+        const brief = exampleBrief()
+        const proposals = draftProposals('blocks', brief, plan)
+        applyProposals(
+            brief,
+            proposals,
+            new Set(proposals.map((proposal) => proposal.id))
+        )
+        const added = brief.blocks.at(-1)!
+        expect(added).toMatchObject({ slug: 'log-book', fullWidth: true })
+        expect(added.fields[0]).toMatchObject({
+            name: 'releases',
+            type: 'list',
+        })
+        expect(brief.restyled.at(-1)).toEqual({
+            type: 'stats',
+            treatment: 'Big figures',
+        })
+    })
+})
+
+describe('designFields', () => {
+    const block = () => exampleBrief().blocks[4]!
+
+    it('asks with the intro names, the types and the Markdown names', () => {
+        const request = blockFieldsRequest(exampleBrief(), block())
+        expect(request.prompt).toContain(
+            'already has eyebrow, heading, description, ctas, align'
+        )
+        expect(request.prompt).toContain('list')
+        expect(request.prompt).toContain('for lists items')
+        expect(request.prompt).toContain('stats:list[value:string!')
+    })
+
+    it('keeps what the scaffolder accepts and says what it dropped', async () => {
+        const { caller } = fakeCaller([
+            {
+                fields: [
+                    {
+                        name: 'stats',
+                        type: 'list',
+                        required: true,
+                        of: [
+                            { name: 'value', type: 'string', required: true },
+                            { name: 'value', type: 'text', required: false },
+                        ],
+                        note: 'Each figure',
+                    },
+                    {
+                        name: 'heading',
+                        type: 'string',
+                        required: false,
+                        of: [],
+                        note: '',
+                    },
+                    {
+                        name: 'source',
+                        type: 'text',
+                        required: false,
+                        of: [],
+                        note: 'Where the numbers come from',
+                    },
+                ],
+            },
+        ])
+        const designed = await designFields(caller, exampleBrief(), block())
+        expect(designed.fields).toEqual([
+            {
+                name: 'stats',
+                type: 'list',
+                required: true,
+                of: [{ name: 'value', type: 'string', required: true }],
+            },
+            { name: 'source', type: 'text', required: false },
+        ])
+        expect(designed.dropped).toHaveLength(2)
+        expect(designed.notes.source).toBe('Where the numbers come from')
+    })
+
+    it('drops a list left with no item fields', () => {
+        expect(
+            keepValidFields([
+                {
+                    name: 'items',
+                    type: 'list',
+                    required: false,
+                    of: [{ name: 'Bad', type: 'string', required: false }],
+                },
+            ]).fields
+        ).toEqual([])
     })
 })

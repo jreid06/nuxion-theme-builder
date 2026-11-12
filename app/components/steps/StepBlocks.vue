@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { SAFARI_TINTS } from '~/services/brief/content'
-import type { RestyledBlock, ThemeBlock } from '~/services/brief/model'
+import {
+    themeBlock,
+    type RestyledBlock,
+    type ThemeBlock,
+} from '~/services/brief/model'
 import { pascalCase, themeName } from '~/services/brief/names'
 import { SHIPPED_BLOCKS } from '~/services/brief/nuxion'
 import { scaffoldBlockCommand } from '~/services/export/renderCommands'
+import {
+    featureBlockIdeas,
+    fieldsFromAnswers,
+    type BlockIdea,
+} from '~/services/inspire/blockInterview'
 import { rowKey } from '~/services/utils/dom'
 
 const { brief } = storeToRefs(useBriefStore())
@@ -34,7 +43,7 @@ const kinds = computed(() => [
             ['WORK INVOLVED', 'Schema, Vue component and styles'],
             [
                 'YOU GET',
-                `One command that creates its files under themes/${name.value}/`,
+                `One command that creates it, fields and all, under themes/${name.value}/`,
             ],
         ] as [string, string][],
     },
@@ -64,34 +73,30 @@ const fieldGuide = computed((): [string, string][] => {
             'One line on what the block looks like or does, for whoever builds it.',
         ],
         [
-            'Fields beyond the intro',
-            'What editors will fill in. Every theme block already has an eyebrow, heading, description and buttons, so don’t list those.',
+            'Fields',
+            'Answer the questions on the card and the fields are made for you, or ask Claude to design them. Add, rename or remove any afterwards. The card’s command then creates the block with them.',
         ],
         [
-            'Green and grey names',
-            'Green names also appear in the page’s Markdown version and llms.txt. Grey names work on the page but stay out of those files.',
-        ],
-        [
-            'Holds links or rich text',
-            'Tick it if a field holds links, rich text, or a button group not named ctas or buttons. Internal links then resolve properly.',
-        ],
-        [
-            'Full width only',
-            'Tick it if the block needs a whole section. It won’t be offered inside grid columns.',
+            'Markdown',
+            'Fields marked in green also appear in the page’s Markdown version and llms.txt. “page only” fields work on the page but stay out of those files.',
         ],
     ]
 })
 
 const makeRestyle = (): RestyledBlock => ({ type: '', treatment: '' })
-const makeBlock = (): ThemeBlock => ({
-    slug: '',
-    purpose: '',
-    fields: '',
-    projection: false,
-    fullWidth: false,
-})
+const makeBlock = (): ThemeBlock => themeBlock('', '', [], false)
 
 const store = useBriefStore()
+
+const ideas = computed(() => featureBlockIdeas(brief.value))
+const addIdea = (idea: BlockIdea) =>
+    store.change(`Block ${idea.slug}`, (target) => {
+        target.blocks.push({
+            ...themeBlock(idea.slug, idea.purpose),
+            answers: idea.answers,
+            fields: fieldsFromAnswers(idea.answers),
+        })
+    })
 const tints = Object.values(SAFARI_TINTS).map((text) => ({
     item: { text },
     suits: false,
@@ -140,7 +145,7 @@ const chromeThemes = computed(() => [
             title="How to use this step"
             :items="[
                 'Add each shipped block the design changes, then tick how it should change, or choose Custom to say it in your own words.',
-                'For anything a shipped block can’t do, add a theme block and fill in its card.',
+                'For anything a shipped block can’t do, add a theme block and answer the questions on its card. Its fields are made for you.',
                 'Choose the navigation and footer at the bottom of this step.',
             ]"
         />
@@ -178,6 +183,32 @@ const chromeThemes = computed(() => [
                     <dd>{{ detail }}</dd>
                 </template>
             </dl>
+            <div class="assist-bar">
+                <DraftReview
+                    step="blocks"
+                    label="Plan my blocks with Claude"
+                    title="Claude’s block plan"
+                />
+            </div>
+            <div v-if="ideas.length" class="idea">
+                <span class="idea-title">Your signature features name</span>
+                <div class="opt-list">
+                    <div v-for="idea in ideas" :key="idea.slug" class="sug">
+                        <div>
+                            <code>{{ name }}.{{ idea.slug }}</code>
+                            {{ idea.purpose }}
+                        </div>
+                        <button
+                            class="btn sm"
+                            type="button"
+                            :aria-label="`Add ${name}.${idea.slug}`"
+                            @click="addIdea(idea)"
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div v-if="!brief.blocks.length" class="empty">
                 No theme blocks yet. Most themes start with a hero.
             </div>

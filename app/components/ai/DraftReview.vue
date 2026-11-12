@@ -7,7 +7,10 @@ import {
     type Proposal,
 } from '~/services/ai/proposals'
 
-const props = defineProps<{ step: DraftStep }>()
+const props = withDefaults(
+    defineProps<{ step: DraftStep; label?: string; title?: string }>(),
+    { label: 'Draft this step with Claude', title: 'Claude’s draft' }
+)
 
 const store = useBriefStore()
 const { loading, error, run } = useClaudeTask()
@@ -48,10 +51,10 @@ const close = () => {
 
 <template>
     <button class="btn sm add" type="button" :disabled="loading" @click="draft">
-        Draft this step with Claude
+        {{ label }}
     </button>
     <div v-if="loading || error || proposals" class="draft" aria-live="polite">
-        <h2 class="sub">Claude’s draft</h2>
+        <h2 class="sub">{{ title }}</h2>
         <div v-if="loading" class="loading">Claude is reading your brief</div>
         <div v-else-if="error" class="hint" role="alert">{{ error }}</div>
         <template v-else-if="proposals">

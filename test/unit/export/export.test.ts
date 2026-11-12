@@ -215,9 +215,28 @@ describe('renderCommands', () => {
     it('adds a line per block, leaving the hero to the theme scaffold', () => {
         const commands = renderCommands(planned())
         expect(commands).toContain(
-            'npm run scaffold:component -- driftwire.pricing --theme driftwire'
+            `npm run scaffold:component -- driftwire.metrics --theme driftwire --fields 'stats:list[value:string!,label:string,note:text]'`
         )
         expect(commands).not.toContain('scaffold:component -- driftwire.hero')
+        expect(commands).not.toContain('then add fields')
+    })
+
+    it('gives the hero its fields through the theme scaffold', () => {
+        expect(renderCommands(planned())).toContain(
+            `--hero-fields 'announcement:link,items:list[`
+        )
+        const brief = planned()
+        brief.blocks[0]!.fields = []
+        expect(renderCommands(brief)).not.toContain('--hero-fields')
+        expect(renderCommands(exampleBrief())).not.toContain('--hero-fields')
+    })
+
+    it('leaves --fields off a block with none', () => {
+        const brief = planned()
+        brief.blocks[8]!.fields = []
+        expect(renderCommands(brief)).toContain(
+            'npm run scaffold:component -- driftwire.cta --theme driftwire\n'
+        )
     })
 
     it('adds navigation and footer scaffolds only when chosen', () => {

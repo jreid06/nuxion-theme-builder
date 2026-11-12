@@ -177,7 +177,7 @@ export const nextSteps = (brief: Brief): NextStep[] => {
                   id: 'blocks',
                   where: 'Code',
                   title: 'Build the theme blocks',
-                  body: 'Add each block’s extra fields to its schema, then write its layout. The files came from step 3, and the field names are in your brief.',
+                  body: 'The commands in step 3 created each block with its fields. Write each layout, and add anything the scaffolder can’t make, such as an icon picker or a reference to another document.',
                   milestone: `Your blocks are finished and in the page builder, under Theme: ${title}.`,
               }
             : {

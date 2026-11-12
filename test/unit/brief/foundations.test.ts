@@ -15,7 +15,6 @@ import {
 import { blankBrief } from '~/services/brief/model'
 import {
     blockType,
-    parseFields,
     pascalCase,
     prefixFor,
     slugify,
@@ -56,14 +55,6 @@ describe('names', () => {
 
     it('names components the way TypeGen does', () => {
         expect(pascalCase('acme.logo-cloud')).toBe('AcmeLogoCloud')
-    })
-
-    it('parses a field list', () => {
-        expect(parseFields(' cells, title ,, body')).toEqual([
-            'cells',
-            'title',
-            'body',
-        ])
     })
 
     it('fills the prefix into a type class', () => {

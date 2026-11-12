@@ -144,12 +144,32 @@ export interface RestyledBlock {
     treatment: string
 }
 
+/** One field the scaffolder creates. `type` is one of its `--fields` types. */
+export interface BlockField {
+    name: string
+    type: string
+    required: boolean
+    /** A list's item fields. */
+    of?: BlockField[]
+}
+
+/** The block interview's answers: ids from app/services/inspire/blockInterview.ts. */
+export interface BlockAnswers {
+    job: string
+    shape: '' | 'single' | 'list' | 'both'
+    itemParts: string[]
+    sectionParts: string[]
+    actions: string[]
+    special: string
+}
+
 export interface ThemeBlock {
     /** Without the theme's namespace: `pricing`, not `acme.pricing`. */
     slug: string
     purpose: string
-    fields: string
-    projection: boolean
+    answers: BlockAnswers
+    /** The fields after the intro every theme block has. */
+    fields: BlockField[]
     fullWidth: boolean
 }
 
@@ -239,6 +259,35 @@ export const buttonPreset = (
     light: ButtonColors = { fill: '', text: '' },
     dark: ButtonColors = { fill: '', text: '' }
 ): ButtonPreset => ({ name, style, shape, source, light, dark, use })
+
+export const blankAnswers = (): BlockAnswers => ({
+    job: '',
+    shape: '',
+    itemParts: [],
+    sectionParts: [],
+    actions: [],
+    special: '',
+})
+
+export const themeBlock = (
+    slug = '',
+    purpose = '',
+    fields: BlockField[] = [],
+    fullWidth = true
+): ThemeBlock => ({
+    slug,
+    purpose,
+    answers: blankAnswers(),
+    fields,
+    fullWidth,
+})
+
+export const blockField = (
+    name: string,
+    type = 'string',
+    required = false,
+    of?: BlockField[]
+): BlockField => (of ? { name, type, required, of } : { name, type, required })
 
 export const typeRow = (
     cls: string,

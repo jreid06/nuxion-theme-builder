@@ -20,6 +20,7 @@ import type {
     FontChoice,
     RenderScheme,
 } from '../brief/model'
+import { fieldSpec } from '../brief/blockFields'
 import { blockType, pascalCase, typeClass } from '../brief/names'
 import { swatchName } from '../brief/resolve'
 import type { StepId } from '../brief/steps'
@@ -392,8 +393,7 @@ ${table(
         '`_type`',
         'Component',
         'Purpose',
-        'Key fields',
-        'Links / PT → projection',
+        'Fields (`--fields`)',
         'In a grid column?',
     ],
     brief.blocks.map((block) => {
@@ -402,8 +402,7 @@ ${table(
             code(type),
             `${pascalCase(type)}.vue`,
             block.purpose,
-            block.fields,
-            block.projection ? 'yes' : 'no',
+            block.fields.length ? code(fieldSpec(block.fields)) : '',
             block.fullWidth ? 'no → `fullWidthBlocks`' : 'yes',
         ]
     })

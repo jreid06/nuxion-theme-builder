@@ -963,6 +963,59 @@
         display: block;
     }
 
+    .bc-step {
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        background: var(--panel);
+        padding: 9px 12px;
+    }
+
+    .bc-step summary {
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .bc-step summary small {
+        font-weight: 400;
+        color: var(--muted);
+        margin-left: 6px;
+    }
+
+    .interview {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+    }
+
+    .bf-items {
+        margin-left: 14px;
+        padding-left: 12px;
+        border-left: 2px solid var(--line);
+    }
+
+    .bf-req {
+        align-items: center;
+    }
+
+    .bf-bad {
+        color: var(--bad);
+    }
+
+    .bf-list {
+        margin: 0;
+        padding-left: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 13px;
+    }
+
+    .bf-list code {
+        font: 400 12px/1.5 var(--f-mono);
+        overflow-wrap: anywhere;
+    }
+
     .chips {
         display: flex;
         flex-wrap: wrap;

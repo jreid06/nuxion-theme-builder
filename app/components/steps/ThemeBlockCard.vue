@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { checkFields } from '~/services/brief/blockFields'
 import type { ThemeBlock } from '~/services/brief/model'
-import { blockType, pascalCase, parseFields } from '~/services/brief/names'
-import { markdownRole } from '~/services/brief/nuxion'
+import { blockType, pascalCase, themeName } from '~/services/brief/names'
+import {
+    scaffoldBlockCommand,
+    scaffoldThemeCommand,
+} from '~/services/export/renderCommands'
 
 const props = defineProps<{ block: ThemeBlock; index: number }>()
 defineEmits<{ remove: [] }>()
@@ -9,12 +13,19 @@ defineEmits<{ remove: [] }>()
 const { brief } = storeToRefs(useBriefStore())
 
 const type = computed(() => blockType(brief.value, props.block))
-const fields = computed(() =>
-    parseFields(props.block.fields).map((field) => ({
-        field,
-        role: markdownRole(field),
-    }))
+const issues = computed(() => checkFields(props.block.fields))
+const isHero = computed(() => props.block.slug === 'hero')
+const command = computed(() =>
+    isHero.value
+        ? scaffoldThemeCommand(brief.value)
+        : scaffoldBlockCommand(
+              type.value,
+              themeName(brief.value),
+              props.block.fields
+          )
 )
+/** Open until the block has fields, so a new block starts with the questions. */
+const interviewOpen = ref(!props.block.fields.length)
 const path = (field: string) => `blocks.${props.index}.${field}`
 </script>
 
@@ -51,37 +62,53 @@ const path = (field: string) => `blocks.${props.index}.${field}`
                 v-model="block.purpose"
                 :path="path('purpose')"
                 label="Purpose"
+                placeholder="One line on what it looks like"
             />
         </div>
-        <TextField
-            v-model="block.fields"
-            :path="path('fields')"
-            label="Fields beyond the intro"
-            mono
-            placeholder="cells, title, body"
-            hint="Separate names with commas."
-        />
-        <div v-if="fields.length" class="chips">
-            <span
-                v-for="({ field, role }, position) in fields"
-                :key="position"
-                class="tag"
-                :class="{ ok: role }"
-            >
-                {{ role ? `${field} · ${role}` : field }}
+
+        <details class="bc-step" :open="interviewOpen">
+            <summary @click.prevent="interviewOpen = !interviewOpen">
+                Design this block
+                <small>
+                    Answer a few questions and the fields are made for you
+                </small>
+            </summary>
+            <BlockInterview :block="block" :index="index" />
+        </details>
+
+        <div class="field">
+            <span class="flabel">
+                Fields
+                <small class="hint">
+                    after the eyebrow, heading, description and buttons every
+                    theme block has
+                </small>
             </span>
+            <BlockFieldsEditor
+                :fields="block.fields"
+                :path="path('fields')"
+                :issues="issues"
+            />
         </div>
-        <div class="flex flex-wrap gap-[18px]">
-            <CheckRow
-                :id="`block-${index}-projection`"
-                v-model="block.projection"
-                label="Holds links or rich text"
-            />
-            <CheckRow
-                :id="`block-${index}-full`"
-                v-model="block.fullWidth"
-                label="Full width only"
-            />
+
+        <CheckRow
+            :id="`block-${index}-full`"
+            v-model="block.fullWidth"
+            label="Full width only (it won’t be offered inside grid columns)"
+        />
+
+        <div v-if="block.slug" class="field">
+            <span class="flabel">
+                {{
+                    isHero
+                        ? 'Created with the theme, by'
+                        : 'Creates this block with its fields'
+                }}
+            </span>
+            <CommandBlock :command="command" />
+            <div v-if="issues.length" class="hint bf-bad" role="alert">
+                Fix the fields marked above first, or the scaffolder will stop.
+            </div>
         </div>
     </div>
 </template>

@@ -1,6 +1,7 @@
 import { SAFARI_TINTS } from '../content'
 import type { Brief } from '../model'
-import { blockType, parseFields } from '../names'
+import { checkFields, flattenFields } from '../blockFields'
+import { blockType } from '../names'
 import { markdownRole } from '../nuxion'
 import type { Issue } from '.'
 
@@ -19,8 +20,15 @@ export const checkBlocks = (brief: Brief): Issue[] => {
     brief.blocks.forEach((block, index) => {
         if (!block.slug)
             add('error', `blocks.${index}.slug`, 'Name this block.')
-        const fields = parseFields(block.fields)
-        if (fields.length && !fields.some(reachesMarkdownAsContent)) {
+        for (const issue of checkFields(block.fields)) {
+            add(
+                'error',
+                `blocks.${index}.fields.${issue.at}`,
+                `${blockType(brief, block)}: ${issue.message}`
+            )
+        }
+        const names = flattenFields(block.fields).map((field) => field.name)
+        if (names.length && !names.some(reachesMarkdownAsContent)) {
             add(
                 'warn',
                 `blocks.${index}.fields`,

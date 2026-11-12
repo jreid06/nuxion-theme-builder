@@ -135,5 +135,32 @@
         "## 7. Build plan",
         "## 8. QA before release",
         "## Open questions"
-    ]
+    ],
+    "scaffoldFields": {
+        "types": [
+            "string",
+            "text",
+            "number",
+            "boolean",
+            "portable-text",
+            "image",
+            "link",
+            "link.group",
+            "list"
+        ],
+        "reserved": [
+            "options"
+        ],
+        "linkGroupNames": [
+            "ctas",
+            "buttons"
+        ],
+        "intro": [
+            "eyebrow",
+            "heading",
+            "description",
+            "ctas",
+            "align"
+        ]
+    }
 }

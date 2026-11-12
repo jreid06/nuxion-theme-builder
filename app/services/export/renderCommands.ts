@@ -1,4 +1,5 @@
-import type { Brief } from '../brief/model'
+import { fieldSpec } from '../brief/blockFields'
+import type { BlockField, Brief } from '../brief/model'
 import { blockType, themeName, themeTitle } from '../brief/names'
 import { catalogFont } from '../brief/nuxion'
 import {
@@ -12,11 +13,32 @@ import {
 export const createDatasetCommand = (dataset: string) =>
     `(cd studio && npx sanity dataset create ${dataset})`
 
-export const scaffoldThemeCommand = (brief: Brief) =>
-    `npm run scaffold:theme -- ${themeName(brief)} --title "${themeTitle(brief)}"`
+/**
+ * A `--fields` spec quoted for the shell. Single quotes, because inside double
+ * quotes an interactive shell can read the `!` of a required field as history.
+ */
+const quotedSpec = (fields: BlockField[]) => `'${fieldSpec(fields)}'`
 
-export const scaffoldBlockCommand = (type: string, name: string) =>
-    `npm run scaffold:component -- ${type} --theme ${name}`
+const heroOf = (brief: Brief) =>
+    brief.blocksOn
+        ? brief.blocks.find((block) => block.slug === 'hero')
+        : undefined
+
+export const scaffoldThemeCommand = (brief: Brief) => {
+    const hero = heroOf(brief)
+    return `npm run scaffold:theme -- ${themeName(brief)} --title "${themeTitle(brief)}"${
+        hero?.fields.length ? ` --hero-fields ${quotedSpec(hero.fields)}` : ''
+    }`
+}
+
+export const scaffoldBlockCommand = (
+    type: string,
+    name: string,
+    fields: BlockField[] = []
+) =>
+    `npm run scaffold:component -- ${type} --theme ${name}${
+        fields.length ? ` --fields ${quotedSpec(fields)}` : ''
+    }`
 
 export const CSS_COMPILE = 'npm run cssvars:generate'
 
@@ -72,8 +94,13 @@ export const renderCommands = (brief: Brief) => {
     if (extra.length) {
         lines.push('# One line per theme block')
         for (const block of extra) {
-            lines.push(scaffoldBlockCommand(blockType(brief, block), name))
-            if (block.fields) lines.push(`#   then add fields: ${block.fields}`)
+            lines.push(
+                scaffoldBlockCommand(
+                    blockType(brief, block),
+                    name,
+                    block.fields
+                )
+            )
         }
         lines.push('')
     }

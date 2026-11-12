@@ -27,7 +27,7 @@ Needs Node 22.18 or newer.
 | BRIEF.md       | `themes/<name>/BRIEF.md`              | The written plan, in the layout of Nuxion's `THEME_BRIEF.md`                               |
 | theme.css      | `themes/<name>/app/theme.css`         | Width, shape, button and type tokens, generated variables, and empty rules to write        |
 | Studio content | `themes/<name>/studio-content.ndjson` | Colours, Color Themes, buttons, Site Settings and a Home page, for `sanity dataset import` |
-| Commands       | Run from the Nuxion repo root         | The dataset, scaffold, import and check commands for this theme                            |
+| Commands       | Run from the Nuxion repo root         | The dataset, scaffold (each block with its `--fields`), import and check commands          |
 
 The Review and export step lists the numbered next steps, tailored to the brief.
 
@@ -52,9 +52,19 @@ restyled block offers changes to tick for its type plus a Custom box, and the
 navigation, footer and iPhone status-bar fields have starters too. The data
 lives in `app/services/inspire/`.
 
+**Designing a block.** Each theme block asks the questions a block designer
+would: what job the section does, whether it holds a list of items, what each
+item holds, what else the section holds and what a visitor can do. Fixed rules
+turn the answers into fields (`app/services/inspire/blockInterview.ts`), named
+from Nuxion's Markdown lists so the content reaches the page's Markdown version.
+The fields stay editable, and each card shows the one command that creates the
+block with them: `npm run scaffold:component -- <name>.<block> --theme <name>
+--fields '…'`, or `--hero-fields` on `scaffold:theme` for the hero. Signature
+features that name a `<name>.<block>` are offered as blocks to add.
+
 **Claude, optional.** With their own API key, the author can ask Claude to
-suggest or improve a field, draft a whole step (Concept, Product, Identity, Art)
-or mix a palette. Every request opens with the concept, then everything else
+suggest or improve a field, draft a whole step (Concept, Product, Identity, Art),
+mix a palette, plan which blocks the theme needs, or design one block's fields. Every request opens with the concept, then everything else
 written so far. Nothing reaches the brief without a click, and the last change
 can always be undone.
 
@@ -92,16 +102,18 @@ without Vue or a browser.
 
 ## Keeping up with Nuxion
 
-The fonts, shipped block types, Markdown field names and template headings all
-come from a Nuxion checkout rather than being copied by hand:
+The fonts, shipped block types, Markdown field names, template headings and the
+scaffolder's `--fields` rules all come from a Nuxion checkout rather than being
+copied by hand:
 
 ```bash
 npm run sync:nuxion -- ../nuxion-base
 ```
 
 Run it after a Nuxion release. `test/integration/nuxion.test.ts` fails if the
-snapshot is out of date, and checks the generated Studio documents against
-Nuxion's own schema. It looks for `NUXION_BASE`, or a `nuxion-base` folder beside
+snapshot is out of date, checks the generated Studio documents against Nuxion's
+own schema, and runs every `--fields` spec this app can write through Nuxion's
+own parser. The `list` type needs a Nuxion whose scaffolder has it. It looks for `NUXION_BASE`, or a `nuxion-base` folder beside
 this one, and is skipped when there is neither.
 
 ## Checks

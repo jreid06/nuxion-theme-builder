@@ -1,11 +1,18 @@
 import type * as z from 'zod'
+import facts from '~~/data/nuxion.generated.json'
+import { fieldSpec, SCAFFOLD } from '../brief/blockFields'
 import { KEEP_WORDS } from '../brief/content'
-import type { Brief } from '../brief/model'
+import type { Brief, ThemeBlock } from '../brief/model'
+import { blockType } from '../brief/names'
+import { SHIPPED_BLOCKS } from '../brief/nuxion'
+import { describeAnswers } from '../inspire/blockInterview'
 import { describeDirection, SECTOR_IDS, VIBE_IDS } from '../inspire/direction'
 import type { AssistField } from '../inspire/fieldGuides'
 import { PALETTE_ROLES } from '../inspire/palettes'
 import {
     artDraftSchema,
+    blockFieldsSchema,
+    blockPlanSchema,
     conceptDraftSchema,
     featuresSchema,
     identityDraftSchema,
@@ -58,15 +65,23 @@ const chromeLine = (
             .join('. ')
     )
 
-const blocksContext = ({ restyled, chrome }: Brief) => {
+const blocksContext = (brief: Brief) => {
+    const { restyled, chrome } = brief
     const blocks = restyled
         .filter((block) => block.type)
         .map(
             (block) =>
                 `- ${block.type}${block.treatment ? `: ${block.treatment}` : ''}`
         )
+    const built = brief.blocks
+        .filter((block) => block.slug)
+        .map(
+            (block) =>
+                `- ${blockType(brief, block)}${block.purpose ? `: ${block.purpose}` : ''}`
+        )
     return [
         blocks.length ? `Shipped blocks, restyled:\n${blocks.join('\n')}` : '',
+        built.length ? `Theme blocks planned:\n${built.join('\n')}` : '',
         chromeLine('Navigation', chrome.nav, chrome.navTheme, chrome.navNote),
         chromeLine(
             'Footer',
@@ -199,7 +214,8 @@ export const rulesRequest = (brief: Brief) =>
         'low'
     )
 
-export type DraftStep = 'concept' | 'product' | 'identity' | 'art'
+/** `blocks` drafts from its own button on the Blocks step, not StepHost's. */
+export type DraftStep = 'concept' | 'product' | 'identity' | 'art' | 'blocks'
 
 export const DRAFT_STEPS: DraftStep[] = [
     'concept',
@@ -215,6 +231,7 @@ const DRAFT_TASKS: Record<DraftStep, string> = {
     identity:
         'Draft the identity section: the idea (two or three short paragraphs: metaphor, where colour comes from, how depth is made, the one recognisable tension) and three design rules with how each is kept.',
     art: 'Draft the art section: an imagery policy, one sentence describing the art, and two CSS art primitives (class name without the prefix, what it draws, variants, motion).',
+    blocks: `Plan the page blocks this theme needs, leaving out any already planned above. Restyle a shipped block wherever its layout already fits, choosing from [${SHIPPED_BLOCKS.join(', ')}], with a one-line treatment. Build a theme block only for a signature feature or layout no shipped block offers. For each block to build give its slug (lowercase words joined by hyphens, without the codename), its purpose (one line on what it looks like), why it is needed (the feature or idea it serves), whether it needs the full width, and the interview: its job, its shape, what each item holds, what the section holds besides its intro, and what visitors can do. Give each its own reason in under fifteen words.`,
 }
 
 export const draftRequest = (
@@ -231,7 +248,29 @@ export const draftRequest = (
             return request(prompt, identityDraftSchema, 'medium')
         case 'art':
             return request(prompt, artDraftSchema, 'medium')
+        case 'blocks':
+            return request(prompt, blockPlanSchema, 'medium')
     }
+}
+
+const { markdownFields } = facts
+
+/** Fields for one theme block, from its purpose and interview answers. */
+export const blockFieldsRequest = (brief: Brief, block: ThemeBlock) => {
+    const current = block.fields.length ? fieldSpec(block.fields) : 'none yet'
+    return request(
+        `${briefContext(brief)}
+
+Design the fields for the theme block ${blockType(brief, block)}${block.purpose ? `: ${block.purpose}` : ''}.
+${describeAnswers(block.answers) || 'The author hasn’t answered the block interview yet, so work from the purpose and the brief.'}
+Its fields now: ${current}.
+
+Every theme block already has ${SCAFFOLD.intro.join(', ')}, so never add those. Use only these types: ${SCAFFOLD.types.join(', ')}. A list holds repeating items: put its item fields in "of", one level deep, with no list inside a list. Give every other field an empty "of".
+Names are camelCase. Prefer these names, because they reach the page's Markdown version: for titles ${markdownFields.title.join(', ')}; for figures ${markdownFields.figure.join(', ')}; for plain text ${markdownFields.text.join(', ')}; for rich text ${markdownFields.prose.join(', ')}; for lists ${markdownFields.nested.join(', ')}.
+Put the field an item is titled by first among its item fields, as a short text. Mark a field required only when the block can't render without it. Keep it to what an editor will really fill in, and give each field a note of under ten words saying what goes in it.`,
+        blockFieldsSchema,
+        'low'
+    )
 }
 
 /** A palette in the ten roles. `failures` names pairs that failed last time. */

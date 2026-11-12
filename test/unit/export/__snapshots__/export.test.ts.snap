@@ -233,17 +233,17 @@ Generated from the palette.
 
 ### 5.2 Theme blocks
 
-| \`_type\`                 | Component               | Purpose                                                                | Key fields                                    | Links / PT → projection | In a grid column?      |
-| ----------------------- | ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------- | ----------------------- | ---------------------- |
-| \`driftwire.hero\`        | DriftwireHero.vue       | two columns, text left and signal board right; logos a plain row below | announcement, consoleFlags, logos             | yes                     | no → \`fullWidthBlocks\` |
-| \`driftwire.bento\`       | DriftwireBento.vue      | asymmetric panels with gaps                                            | cells, title, body, metric                    | no                      | no → \`fullWidthBlocks\` |
-| \`driftwire.code-window\` | DriftwireCodeWindow.vue | code left, intro right, light panel in the light scheme                | tabs, points, title, body                     | no                      | no → \`fullWidthBlocks\` |
-| \`driftwire.stories\`     | DriftwireStories.vue    | editorial quote list with ruled separators                             | stories, name, role, quote, company, result   | yes                     | no → \`fullWidthBlocks\` |
-| \`driftwire.metrics\`     | DriftwireMetrics.vue    | logbook figures in a ruled row                                         | stats, value, label, note                     | no                      | no → \`fullWidthBlocks\` |
-| \`driftwire.logo-cloud\`  | DriftwireLogoCloud.vue  | ruled table of integration categories                                  | items, name, icon                             | yes                     | no → \`fullWidthBlocks\` |
-| \`driftwire.pricing\`     | DriftwirePricing.vue    | ledger columns, billing switch and comparison table                    | tiers, name, monthly, blurb, includes, groups | yes                     | no → \`fullWidthBlocks\` |
-| \`driftwire.timeline\`    | DriftwireTimeline.vue   | ship’s-log entries                                                     | releases, version, title, notes, tags, date   | yes                     | no → \`fullWidthBlocks\` |
-| \`driftwire.cta\`         | DriftwireCta.vue        | flag-art panel on night, left-aligned                                  | art, install                                  | yes                     | no → \`fullWidthBlocks\` |
+| \`_type\`                 | Component               | Purpose                                                                | Fields (\`--fields\`)                                                                                                     | In a grid column?      |
+| ----------------------- | ----------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| \`driftwire.hero\`        | DriftwireHero.vue       | two columns, text left and signal board right; logos a plain row below | \`announcement:link,items:list[label:string!,value:string],logos:list[name:string!,image:image]\`                         | no → \`fullWidthBlocks\` |
+| \`driftwire.bento\`       | DriftwireBento.vue      | asymmetric panels with gaps                                            | \`cells:list[title:string!,body:text,value:string]\`                                                                      | no → \`fullWidthBlocks\` |
+| \`driftwire.code-window\` | DriftwireCodeWindow.vue | code left, intro right, light panel in the light scheme                | \`code:text,points:list[title:string!,body:text]\`                                                                        | no → \`fullWidthBlocks\` |
+| \`driftwire.stories\`     | DriftwireStories.vue    | editorial quote list with ruled separators                             | \`stories:list[name:string!,role:string,quote:text,result:string,link:link]\`                                             | no → \`fullWidthBlocks\` |
+| \`driftwire.metrics\`     | DriftwireMetrics.vue    | logbook figures in a ruled row                                         | \`stats:list[value:string!,label:string,note:text]\`                                                                      | no → \`fullWidthBlocks\` |
+| \`driftwire.logo-cloud\`  | DriftwireLogoCloud.vue  | ruled table of integration categories                                  | \`items:list[name:string!,image:image,link:link]\`                                                                        | no → \`fullWidthBlocks\` |
+| \`driftwire.pricing\`     | DriftwirePricing.vue    | ledger columns, billing switch and comparison table                    | \`tiers:list[name:string!,monthly:string,blurb:text,content:portable-text,link:link,highlighted:boolean],toggle:boolean\` | no → \`fullWidthBlocks\` |
+| \`driftwire.timeline\`    | DriftwireTimeline.vue   | ship’s-log entries                                                     | \`releases:list[version:string!,title:string,date:string,notes:portable-text]\`                                           | no → \`fullWidthBlocks\` |
+| \`driftwire.cta\`         | DriftwireCta.vue        | flag-art panel on night, left-aligned                                  | \`install:string\`                                                                                                        | no → \`fullWidthBlocks\` |
 
 ### 5.3 Chrome
 

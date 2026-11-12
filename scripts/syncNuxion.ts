@@ -17,6 +17,18 @@ export interface NuxionFacts {
     markdownFields: Record<MarkdownRole, string[]>
     shippedBlocks: string[]
     briefHeadings: string[]
+    scaffoldFields: ScaffoldFields
+}
+
+/** What `scaffold:component --fields` accepts, read from its own source. */
+export interface ScaffoldFields {
+    types: string[]
+    /** Not allowed as a block's own field name. */
+    reserved: string[]
+    /** Only allowed as a block's own field when it is a link.group. */
+    linkGroupNames: string[]
+    /** Every theme block already has these. */
+    intro: string[]
 }
 
 type MarkdownRole = 'title' | 'figure' | 'prose' | 'text' | 'list' | 'nested'
@@ -80,6 +92,43 @@ export const extractBriefHeadings = (source: string): string[] => {
     return headings
 }
 
+const quotedList = (source: string, constant: string, file: string) => {
+    const body = new RegExp(`const ${constant} = \\[([\\s\\S]*?)\\]`).exec(
+        source
+    )?.[1]
+    if (!body) throw new Error(`${file}: ${constant} not found`)
+    return quoted(body)
+}
+
+export const extractScaffoldFields = (
+    fieldsSource: string,
+    themeSource: string,
+    fragmentsSource: string
+): ScaffoldFields => {
+    const table = /export const FIELD_TYPES = \{([\s\S]*?)\n\}/.exec(
+        fieldsSource
+    )?.[1]
+    if (!table) throw new Error('scaffold/fields.js: FIELD_TYPES not found')
+    const types = [...table.matchAll(/^ {4}'?([a-z.-]+)'?: \{$/gm)].map(
+        (match) => match[1] as string
+    )
+    if (!types.length) throw new Error('scaffold/fields.js: no field types')
+    return {
+        types,
+        reserved: quotedList(
+            fieldsSource,
+            'RESERVED_NAMES',
+            'scaffold/fields.js'
+        ),
+        linkGroupNames: quotedList(
+            fragmentsSource,
+            'LINK_GROUPS_BY_FIELD',
+            'groq-fragments.ts'
+        ),
+        intro: quotedList(themeSource, 'INTRO_FIELDS', 'scaffold/theme.js'),
+    }
+}
+
 export const collectFacts = (checkout: string): NuxionFacts => {
     const read = (file: string) =>
         fs.readFileSync(path.join(checkout, file), 'utf8')
@@ -90,6 +139,11 @@ export const collectFacts = (checkout: string): NuxionFacts => {
         ),
         shippedBlocks: extractShippedBlocks(read('app/components/ui/index.ts')),
         briefHeadings: extractBriefHeadings(read('themes/THEME_BRIEF.md')),
+        scaffoldFields: extractScaffoldFields(
+            read('scripts/scaffold/fields.js'),
+            read('scripts/scaffold/theme.js'),
+            read('shared/groq-fragments.ts')
+        ),
     }
 }
 

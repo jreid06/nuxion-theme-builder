@@ -1,10 +1,15 @@
+import { fieldsFromNames } from './blockFields'
 import { exampleBrief } from './example'
 import {
+    blankAnswers,
     blankBrief,
     blankLayout,
     defaultStudioOptions,
     SCHEMA_VERSION,
+    type BlockAnswers,
+    type BlockField,
     type Brief,
+    type ThemeBlock,
 } from './model'
 
 /**
@@ -37,6 +42,23 @@ const isBriefShaped = (value: unknown): value is Partial<Brief> => {
     return candidate.v === SCHEMA_VERSION && Array.isArray(candidate.swatches)
 }
 
+/** A theme block as saved before fields were typed: names in one string. */
+type SavedBlock = Partial<Omit<ThemeBlock, 'fields' | 'answers'>> & {
+    fields?: BlockField[] | string
+    answers?: Partial<BlockAnswers>
+}
+
+const migrateBlock = (block: SavedBlock): ThemeBlock => ({
+    slug: block.slug ?? '',
+    purpose: block.purpose ?? '',
+    answers: { ...blankAnswers(), ...block.answers },
+    fields:
+        typeof block.fields === 'string'
+            ? fieldsFromNames(block.fields)
+            : (block.fields ?? []),
+    fullWidth: block.fullWidth ?? true,
+})
+
 /** Fills anything a saved brief doesn't have yet. */
 export const withDefaults = (saved: Partial<Brief>): Brief => {
     const base = saved.example ? exampleBrief() : blankBrief()
@@ -48,6 +70,9 @@ export const withDefaults = (saved: Partial<Brief>): Brief => {
             ...(saved.layout ?? base.layout),
         },
         studio: { ...defaultStudioOptions(), ...saved.studio },
+        blocks: (saved.blocks ?? base.blocks).map((block) =>
+            migrateBlock(block as SavedBlock)
+        ),
     }
 }
 
